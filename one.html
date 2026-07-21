@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timezone Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont,
+                'Helvetica Neue', Arial, sans-serif;
+            background: #0f0f13;
+            color: #e8e8ed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* ── layout ── */
+
+        .container {
+            max-width: 820px;
+            width: 100%;
+        }
+
+        h1 {
+            font-weight: 500;
+            font-size: 1.5rem;
+            letter-spacing: 0.02em;
+            color: #888;
+            margin-bottom: 2.25rem;
+            text-align: center;
+        }
+
+        .clocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+        }
+
+        /* ── clock card ── */
+
+        .clock-card {
+            background: #1a1a22;
+            border-radius: 20px;
+            padding: 1.5rem 2rem 1.75rem;
+            flex: 1 1 220px;
+            min-width: 200px;
+            text-align: center;
+            transition: opacity 0.35s ease, transform 0.35s ease,
+                box-shadow 0.25s ease;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+            border: 1px solid #27272f;
+        }
+
+        .clock-card.hidden {
+            opacity: 0.15;
+            pointer-events: none;
+            transform: scale(0.96);
+        }
+
+        .clock-card .country {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #7a7a88;
+            margin-bottom: 0.5rem;
+        }
+
+        .clock-card .time {
+            font-size: 2.4rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.03em;
+            line-height: 1.2;
+            color: #f0f0f8;
+        }
+
+        .clock-card .date {
+            font-size: 0.85rem;
+            color: #9a9aa8;
+            margin-top: 0.4rem;
+        }
+
+        .clock-card .tz-label {
+            font-size: 0.7rem;
+            color: #5a5a68;
+            margin-top: 0.2rem;
+        }
+
+        /* ── admin ── */
+
+        .admin-toggle {
+            margin-top: 3.5rem;
+            text-align: center;
+        }
+
+        .admin-toggle summary {
+            cursor: pointer;
+            display: inline-block;
+            color: #555;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            padding: 0.35rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #2a2a32;
+            user-select: none;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .admin-toggle summary:hover {
+            color: #aaa;
+            border-color: #444;
+        }
+
+        .admin-panel {
+            margin-top: 1.25rem;
+            background: #16161e;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            border: 1px solid #282830;
+            max-width: 480px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .admin-panel .lock {
+            display: flex;
+            gap: 0.6rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .admin-panel input[type='password'] {
+            background: #0d0d12;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 0.45rem 0.75rem;
+            color: #e0e0e8;
+            font-size: 0.85rem;
+            width: 140px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .admin-panel input[type='password']:focus {
+            border-color: #5a7aff;
+        }
+
+        .admin-panel .btn {
+            background: #2a2a34;
+            border: none;
+            border-radius: 8px;
+            padding: 0.45rem 1rem;
+            color: #ddd;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .admin-panel .btn:hover {
+            background: #3a3a46;
+        }
+
+        .admin-panel .error {
+            color: #f55;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            min-height: 1.2em;
+        }
+
+        .toggles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem 1.25rem;
+            justify-content: center;
+            margin-top: 1.25rem;
+        }
+
+        .toggles label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: #ccc;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .toggles input[type='checkbox'] {
+            appearance: none;
+            width: 38px;
+            height: 20px;
+            background: #2e2e38;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .toggles input[type='checkbox']::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: #777;
+            border-radius: 50%;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .toggles input[type='checkbox']:checked {
+            background: #3b6eff;
+        }
+
+        .toggles input[type='checkbox']:checked::after {
+            transform: translateX(18px);
+            background: #fff;
+        }
+
+        /* ── footer ── */
+
+        .footer-note {
+            margin-top: 3rem;
+            font-size: 0.7rem;
+            color: #3a3a44;
+        }
+
+        @media (max-width: 540px) {
+            .clock-card .time {
+                font-size: 1.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>World Clock</h1>
+
+        <div class="clocks" id="clocksContainer">
+            <!-- Nigeria -->
+            <div class="clock-card" data-tz="nigeria">
+                <div class="country">Nigeria</div>
+                <div class="time" id="time-nigeria">--:--:--</div>
+                <div class="date" id="date-nigeria"></div>
+                <div class="tz-label">WAT (UTC+1)</div>
+            </div>
+
+            <!-- US Eastern -->
+            <div class="clock-card" data-tz="useastern">
+                <div class="country">United States (Eastern)</div>
+                <div class="time" id="time-useastern">--:--:--</div>
+                <div class="date" id="date-useastern"></div>
+                <div class="tz-label">ET</div>
+            </div>
+
+            <!-- Toronto -->
+            <div class="clock-card" data-tz="toronto">
+                <div class="country">Toronto, Canada</div>
+                <div class="time" id="time-toronto">--:--:--</div>
+                <div class="date" id="date-toronto"></div>
+                <div class="tz-label">ET</div>
+            </div>
+        </div>
+
+        <!-- Admin -->
+        <div class="admin-toggle">
+            <details id="adminDetails">
+                <summary>⚙ Admin</summary>
+                <div class="admin-panel" id="adminPanel">
+                    <div class="lock" id="adminLock">
+                        <input
+                            type="password"
+                            id="adminPass"
+                            placeholder="enter passkey"
+                            autocomplete="off"
+                        />
+                        <button class="btn" id="adminUnlockBtn">Unlock</button>
+                    </div>
+                    <div class="error" id="adminError"></div>
+                    <div class="toggles" id="adminToggles" style="display: none">
+                        <label>
+                            <input type="checkbox" data-tz="nigeria" checked />
+                            Nigeria
+                        </label>
+                        <label>
+                            <input type="checkbox" data-tz="useastern" checked />
+                            US Eastern
+                        </label>
+                        <label>
+                            <input type="checkbox" data-tz="toronto" checked />
+                            Toronto
+                        </label>
+                    </div>
+                </div>
+            </details>
+        </div>
+
+        <div class="footer-note">first interaction plays a chime</div>
+    </div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            /* ─── CONFIG ─── */
+
+            const ADMIN_PASSKEY = 'admin007'; // ← change to whatever you like
+
+            const TZ_CONFIG = {
+                nigeria: { timezone: 'Africa/Lagos', label: 'WAT (UTC+1)' },
+                useastern: {
+                    timezone: 'America/New_York',
+                    label: 'ET (US Eastern)',
+                },
+                toronto: { timezone: 'America/Toronto', label: 'ET (Toronto)' },
+            };
+
+            const LOCALE = 'en-US';
+
+            /* ─── REFS ─── */
+
+            const timeEls = {};
+            const dateEls = {};
+            const cards = {};
+            const toggles = {};
+
+            for (const id of Object.keys(TZ_CONFIG)) {
+                timeEls[id] = document.getElementById(`time-${id}`);
+                dateEls[id] = document.getElementById(`date-${id}`);
+                cards[id] = document.querySelector(`.clock-card[data-tz="${id}"]`);
+                const cb = document.querySelector(
+                    `.toggles input[data-tz="${id}"]`
+                );
+                if (cb) toggles[id] = cb;
+            }
+
+            const adminDetails = document.getElementById('adminDetails');
+            const adminLock = document.getElementById('adminLock');
+            const adminPass = document.getElementById('adminPass');
+            const adminUnlockBtn = document.getElementById('adminUnlockBtn');
+            const adminError = document.getElementById('adminError');
+            const adminToggles = document.getElementById('adminToggles');
+
+            /* ─── BEEP (silent first interaction) ─── */
+
+            let beepPlayed = false;
+
+            function playWelcomeChime() {
+                if (beepPlayed) return;
+                beepPlayed = true;
+
+                try {
+                    const ctx = new (window.AudioContext ||
+                        window.webkitAudioContext)();
+
+                    // Two-tone gentle chime: C5 → E5
+                    const notes = [523.25, 659.25];
+                    const startTime = ctx.currentTime;
+
+                    notes.forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+
+                        const t = startTime + i * 0.14;
+
+                        gain.gain.setValueAtTime(0, t);
+                        gain.gain.linearRampToValueAtTime(0.18, t + 0.025);
+                        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
+
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+
+                        osc.start(t);
+                        osc.stop(t + 0.6);
+                    });
+
+                    // Soft harmonics for warmth
+                    const osc2 = ctx.createOscillator();
+                    const gain2 = ctx.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.value = 1046.5; // C6 (octave)
+                    gain2.gain.setValueAtTime(0, startTime + 0.05);
+                    gain2.gain.linearRampToValueAtTime(0.05, startTime + 0.09);
+                    gain2.gain.exponentialRampToValueAtTime(0.001, startTime + 0.5);
+                    osc2.connect(gain2);
+                    gain2.connect(ctx.destination);
+                    osc2.start(startTime + 0.05);
+                    osc2.stop(startTime + 0.6);
+                } catch (_) {
+                    // silently ignore if AudioContext unavailable
+                }
+            }
+
+            // Bind to first user interaction
+            const interactEvents = ['touchstart', 'scroll', 'mousedown', 'keydown'];
+
+            function onFirstInteraction(e) {
+                // Ignore events originating from the admin panel or password field
+                if (
+                    e.target &&
+                    (e.target.closest('.admin-toggle') ||
+                        e.target.closest('#adminPanel'))
+                ) {
+                    return;
+                }
+                playWelcomeChime();
+                interactEvents.forEach((ev) =>
+                    document.removeEventListener(ev, onFirstInteraction, {
+                        passive: true,
+                        capture: true,
+                    })
+                );
+            }
+
+            interactEvents.forEach((ev) => {
+                document.addEventListener(ev, onFirstInteraction, {
+                    passive: true,
+                    capture: true,
+                    once: false, // we manually clean up so we can ignore admin clicks
+                });
+            });
+
+            /* ─── CLOCK UPDATER ─── */
+
+            function formatTime(tz) {
+                const now = new Date();
+                const timeStr = new Intl.DateTimeFormat(LOCALE, {
+                    timeZone: tz,
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: true,
+                }).format(now);
+
+                const dateStr = new Intl.DateTimeFormat(LOCALE, {
+                    timeZone: tz,
+                    weekday: 'short',
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                }).format(now);
+
+                return { timeStr, dateStr };
+            }
+
+            function updateAllClocks() {
+                for (const [id, cfg] of Object.entries(TZ_CONFIG)) {
+                    const { timeStr, dateStr } = formatTime(cfg.timezone);
+                    if (timeEls[id]) timeEls[id].textContent = timeStr;
+                    if (dateEls[id]) dateEls[id].textContent = dateStr;
+                }
+            }
+
+            updateAllClocks();
+            setInterval(updateAllClocks, 1000);
+
+            /* ─── ADMIN TOGGLES ─── */
+
+            let adminUnlocked = false;
+
+            function applyToggleState() {
+                for (const [id, cb] of Object.entries(toggles)) {
+                    const card = cards[id];
+                    if (card) {
+                        card.classList.toggle('hidden', !cb.checked);
+                    }
+                }
+            }
+
+            // Bind toggle changes
+            for (const cb of Object.values(toggles)) {
+                cb.addEventListener('change', applyToggleState);
+            }
+
+            // Admin unlock
+            function attemptUnlock() {
+                const val = adminPass.value.trim();
+                if (val === ADMIN_PASSKEY) {
+                    adminUnlocked = true;
+                    adminLock.style.display = 'none';
+                    adminToggles.style.display = 'flex';
+                    adminError.textContent = '';
+                    adminPass.value = '';
+                } else {
+                    adminError.textContent = val === '' ? '' : 'Wrong passkey';
+                }
+            }
+
+            adminUnlockBtn.addEventListener('click', attemptUnlock);
+            adminPass.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') attemptUnlock();
+            });
+
+            // Re-lock when closing the details panel
+            adminDetails.addEventListener('toggle', () => {
+                if (!adminDetails.open) {
+                    // Reset
+                    adminUnlocked = false;
+                    adminLock.style.display = 'flex';
+                    adminToggles.style.display = 'none';
+                    adminError.textContent = '';
+                    adminPass.value = '';
+                    // Reset all toggles to visible
+                    for (const cb of Object.values(toggles)) {
+                        cb.checked = true;
+                    }
+                    applyToggleState();
+                }
+            });
+
+            /* ─── INIT ─── */
+
+            // Start with all visible
+            applyToggleState();
+        })();
+    </script>
+</body>
+</html>
