@@ -5,326 +5,182 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>O² Elliotosa — Admin Dashboard</title>
 
-    <!-- ===== FIREBASE SDK (COMPAT v12) ===== -->
     <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-database-compat.js"></script>
 
     <style>
-        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f0ede6;
-            color: #1b1b1b;
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+        body{
+            font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+            background:#f0ede6;color:#1b1b1b
+        }
+        :root{
+            --navy:#0d1b2a;--gold:#d4a373;--orange:#cc5803;
+            --teal:#00897b;--cream:#fefae0
         }
 
-        :root {
-            --navy:       #0d1b2a;
-            --gold:       #d4a373;
-            --orange:     #cc5803;
-            --teal:       #00897b;
-            --cream:      #fefae0;
+        .admin-header{
+            background:linear-gradient(135deg,var(--navy),#1b2a41);
+            color:#fff;padding:20px 30px;
+            display:flex;justify-content:space-between;
+            align-items:center;flex-wrap:wrap;gap:12px;
+            box-shadow:0 2px 15px rgba(0,0,0,0.15)
+        }
+        .admin-header h1{font-size:1.4rem;display:flex;align-items:center;gap:10px}
+        .admin-header h1 .gold{color:var(--gold)}
+        .admin-header .subtitle{font-size:.82rem;opacity:.65;margin-top:2px}
+        .admin-header .actions{display:flex;gap:10px;flex-wrap:wrap}
+        .admin-header .actions a{
+            color:#fff;text-decoration:none;padding:8px 18px;
+            border-radius:8px;font-weight:600;font-size:.85rem;
+            transition:background .3s
+        }
+        .admin-header .actions .view-site{background:var(--orange)}
+        .admin-header .actions .view-site:hover{background:#a84802}
+        .admin-header .actions .reset-btn{background:rgba(255,255,255,0.12)}
+        .admin-header .actions .reset-btn:hover{background:rgba(255,255,255,0.22)}
+
+        .admin-container{max-width:1100px;margin:0 auto;padding:30px 20px 80px}
+
+        .status-banner{
+            background:#fff;border-radius:14px;padding:16px 24px;
+            margin-bottom:28px;display:flex;
+            justify-content:space-between;align-items:center;
+            flex-wrap:wrap;gap:10px;box-shadow:0 2px 10px rgba(0,0,0,0.04);
+            border-left:5px solid var(--teal)
+        }
+        .status-banner .live{color:var(--teal);font-weight:700}
+        .status-banner .live-dot{
+            display:inline-block;width:10px;height:10px;border-radius:50%;
+            background:#4caf50;animation:pulse 1.5s infinite;margin-right:6px
+        }
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+        .status-banner .info{color:#888;font-size:.9rem}
+        .status-banner .info strong{color:#1b1b1b}
+        .status-banner .using-defaults{
+            background:#fff3e0;padding:4px 14px;border-radius:20px;
+            font-size:.8rem;color:var(--orange);font-weight:600
         }
 
-        /* -------- HEADER -------- */
-        .admin-header {
-            background: linear-gradient(135deg, var(--navy), #1b2a41);
-            color: #fff;
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+        .admin-card{
+            background:#fff;border-radius:14px;padding:28px 32px;
+            margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,0.04);
+            border-top:5px solid var(--navy)
         }
-        .admin-header h1 {
-            font-size: 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .admin-header h1 .gold { color: var(--gold); }
-        .admin-header .subtitle { font-size: 0.82rem; opacity: 0.65; margin-top: 2px; }
-        .admin-header .actions { display: flex; gap: 10px; flex-wrap: wrap; }
-        .admin-header .actions a {
-            color: #fff;
-            text-decoration: none;
-            padding: 8px 18px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: background 0.3s;
-        }
-        .admin-header .actions .view-site {
-            background: var(--orange);
-        }
-        .admin-header .actions .view-site:hover { background: #a84802; }
-        .admin-header .actions .reset-btn {
-            background: rgba(255,255,255,0.12);
-        }
-        .admin-header .actions .reset-btn:hover { background: rgba(255,255,255,0.22); }
+        .admin-card.card-orange{border-top-color:var(--orange)}
+        .admin-card.card-gold{border-top-color:var(--gold)}
+        .admin-card.card-teal{border-top-color:var(--teal)}
 
-        /* -------- MAIN -------- */
-        .admin-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 30px 20px 80px;
+        .admin-card h2{
+            font-size:1.15rem;font-weight:700;margin-bottom:20px;
+            display:flex;align-items:center;gap:10px
+        }
+        .admin-card h2 .badge{
+            font-size:.7rem;background:#e0dcd4;padding:2px 12px;
+            border-radius:20px;font-weight:600;color:#666
         }
 
-        /* -------- STATUS -------- */
-        .status-banner {
-            background: #fff;
-            border-radius: 14px;
-            padding: 16px 24px;
-            margin-bottom: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-            border-left: 5px solid var(--teal);
+        .form-row{
+            display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:6px
         }
-        .status-banner .live {
-            color: var(--teal);
-            font-weight: 700;
+        .form-row.full{grid-template-columns:1fr}
+        .form-group{margin-bottom:16px}
+        .form-group label{
+            display:block;font-weight:600;margin-bottom:5px;
+            font-size:.85rem;color:#555
         }
-        .status-banner .live-dot {
-            display: inline-block;
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #4caf50;
-            animation: pulse 1.5s infinite;
-            margin-right: 6px;
+        .form-group input,.form-group textarea{
+            width:100%;padding:12px 14px;
+            border:2px solid #e0dcd4;border-radius:10px;
+            font-size:.95rem;font-family:inherit;
+            transition:border-color .3s;background:#fefaf0
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+        .form-group input:focus,.form-group textarea:focus{
+            outline:none;border-color:var(--navy)
         }
-        .status-banner .info { color: #888; font-size: 0.9rem; }
-        .status-banner .info strong { color: #1b1b1b; }
+        .form-group textarea{resize:vertical;min-height:70px}
+        .form-group .hint{font-size:.78rem;color:#999;margin-top:4px}
 
-        /* -------- CARDS -------- */
-        .admin-card {
-            background: #fff;
-            border-radius: 14px;
-            padding: 28px 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-            border-top: 5px solid var(--navy);
+        .url-list{margin-top:12px}
+        .url-item{
+            display:flex;align-items:center;gap:10px;margin-bottom:8px;
+            background:#f5f0e8;padding:8px 12px;border-radius:8px
         }
-        .admin-card.card-orange { border-top-color: var(--orange); }
-        .admin-card.card-gold   { border-top-color: var(--gold); }
-        .admin-card.card-teal   { border-top-color: var(--teal); }
+        .url-item input{flex:1}
+        .url-item .thumb{
+            width:48px;height:48px;border-radius:6px;object-fit:cover;
+            background:#ddd;flex-shrink:0
+        }
+        .url-item .remove-btn{
+            background:#fbe9e7;border:none;color:#c62828;
+            width:32px;height:32px;border-radius:8px;cursor:pointer;
+            font-weight:700;font-size:1.1rem;transition:background .3s;flex-shrink:0
+        }
+        .url-item .remove-btn:hover{background:#ffcdd2}
+        .add-url-btn{
+            background:#e8f5e9;border:2px dashed #43a047;color:#2e7d32;
+            padding:10px 20px;border-radius:10px;cursor:pointer;
+            font-weight:600;font-size:.9rem;width:100%;
+            transition:background .3s;margin-top:8px
+        }
+        .add-url-btn:hover{background:#c8e6c9}
 
-        .admin-card h2 {
-            font-size: 1.15rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .btn-save{
+            background:linear-gradient(135deg,var(--navy),#1b2a41);
+            color:#fff;border:none;padding:14px 40px;border-radius:12px;
+            font-size:1rem;font-weight:700;cursor:pointer;
+            transition:all .3s;width:100%
         }
-        .admin-card h2 .badge {
-            font-size: 0.7rem;
-            background: #e0dcd4;
-            padding: 2px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            color: #666;
+        .btn-save:hover{
+            transform:translateY(-2px);
+            box-shadow:0 8px 25px rgba(13,27,42,0.3)
         }
+        .btn-save:disabled{opacity:.6;cursor:not-allowed;transform:none}
 
-        /* -------- FORM FIELDS -------- */
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            margin-bottom: 6px;
+        .preview-panel{
+            background:#faf7f0;border-radius:12px;padding:20px 24px;
+            border:2px dashed #e0dcd4;margin-top:16px
         }
-        .form-row.full { grid-template-columns: 1fr; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            font-size: 0.85rem;
-            color: #555;
+        .preview-panel h3{font-size:.95rem;font-weight:700;color:#888;margin-bottom:14px}
+        .preview-grid{display:flex;gap:16px;flex-wrap:wrap}
+        .preview-grid .pv-item{
+            background:#fff;padding:8px 16px;border-radius:8px;
+            font-size:.85rem;box-shadow:0 1px 4px rgba(0,0,0,0.04)
         }
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid #e0dcd4;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            transition: border-color 0.3s;
-            background: #fefaf0;
+        .preview-grid .pv-item strong{color:var(--navy)}
+
+        .toast{
+            position:fixed;bottom:30px;right:30px;background:#2e7d32;
+            color:#fff;padding:16px 28px;border-radius:12px;
+            font-weight:600;box-shadow:0 8px 30px rgba(0,0,0,0.2);
+            transform:translateY(100px);opacity:0;
+            transition:all .4s cubic-bezier(.25,.46,.45,.94);
+            z-index:999;max-width:90vw
         }
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--navy);
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast.error{background:#c62828}
+
+        .config-notice{
+            background:#fff3e0;border:2px solid var(--gold);
+            border-radius:12px;padding:16px 24px;margin-bottom:24px;font-size:.9rem
         }
-        .form-group textarea { resize: vertical; min-height: 70px; }
-        .form-group .hint {
-            font-size: 0.78rem;
-            color: #999;
-            margin-top: 4px;
+        .config-notice strong{color:var(--orange)}
+        .config-notice code{
+            background:#f5f0e8;padding:2px 8px;border-radius:4px;font-size:.85rem
         }
 
-        /* -------- IMAGE URL LIST -------- */
-        .url-list { margin-top: 12px; }
-        .url-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 8px;
-            background: #f5f0e8;
-            padding: 8px 12px;
-            border-radius: 8px;
-        }
-        .url-item input { flex: 1; }
-        .url-item .thumb {
-            width: 48px; height: 48px;
-            border-radius: 6px;
-            object-fit: cover;
-            background: #ddd;
-            flex-shrink: 0;
-        }
-        .url-item .remove-btn {
-            background: #fbe9e7;
-            border: none;
-            color: #c62828;
-            width: 32px; height: 32px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            font-size: 1.1rem;
-            transition: background 0.3s;
-            flex-shrink: 0;
-        }
-        .url-item .remove-btn:hover { background: #ffcdd2; }
-        .add-url-btn {
-            background: #e8f5e9;
-            border: 2px dashed #43a047;
-            color: #2e7d32;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            width: 100%;
-            transition: background 0.3s;
-            margin-top: 8px;
-        }
-        .add-url-btn:hover { background: #c8e6c9; }
-
-        /* -------- BUTTONS -------- */
-        .btn-save {
-            background: linear-gradient(135deg, var(--navy), #1b2a41);
-            color: #fff;
-            border: none;
-            padding: 14px 40px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
-            width: 100%;
-        }
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(13,27,42,0.3);
-        }
-        .btn-save:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* -------- PREVIEW -------- */
-        .preview-panel {
-            background: #faf7f0;
-            border-radius: 12px;
-            padding: 20px 24px;
-            border: 2px dashed #e0dcd4;
-            margin-top: 16px;
-        }
-        .preview-panel h3 {
-            font-size: 0.95rem;
-            font-weight: 700;
-            color: #888;
-            margin-bottom: 14px;
-        }
-        .preview-grid {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-        .preview-grid .pv-item {
-            background: #fff;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-        }
-        .preview-grid .pv-item strong { color: var(--navy); }
-
-        /* -------- TOAST -------- */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #2e7d32;
-            color: #fff;
-            padding: 16px 28px;
-            border-radius: 12px;
-            font-weight: 600;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            z-index: 999;
-            max-width: 90vw;
-        }
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        .toast.error { background: #c62828; }
-
-        /* -------- FIREBASE CONFIG NOTICE -------- */
-        .config-notice {
-            background: #fff3e0;
-            border: 2px solid var(--gold);
-            border-radius: 12px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            font-size: 0.9rem;
-        }
-        .config-notice strong { color: var(--orange); }
-        .config-notice code {
-            background: #f5f0e8;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-        }
-
-        /* -------- RESPONSIVE -------- */
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .admin-header { flex-direction: column; text-align: center; }
-            .admin-header .actions { justify-content: center; }
-            .admin-card { padding: 20px; }
-            .status-banner { flex-direction: column; text-align: center; }
-            .url-item { flex-wrap: wrap; }
+        @media(max-width:768px){
+            .form-row{grid-template-columns:1fr}
+            .admin-header{flex-direction:column;text-align:center}
+            .admin-header .actions{justify-content:center}
+            .admin-card{padding:20px}
+            .status-banner{flex-direction:column;text-align:center}
+            .url-item{flex-wrap:wrap}
         }
     </style>
 </head>
 <body>
 
-<!-- ===== HEADER ===== -->
 <header class="admin-header">
     <div>
         <h1>⚙️ <span class="gold">O² Elliotosa</span> Admin</h1>
@@ -336,25 +192,23 @@
     </div>
 </header>
 
-<!-- ===== MAIN ===== -->
 <div class="admin-container">
 
-    <!-- Config Notice -->
     <div class="config-notice">
         ⚙️ <strong>First time?</strong> Replace the Firebase config in <strong>both</strong> <code>index.html</code> and <code>admin.html</code>
         with your own Firebase project credentials. <a href="#firebaseHelp" style="color:var(--orange);font-weight:600;">How to set up Firebase →</a>
     </div>
 
-    <!-- Status -->
     <div class="status-banner">
         <div>
             <span class="live-dot"></span>
-            <span class="live">Connected to Firebase</span>
+            <span class="live" id="connectionStatus">Connecting to Firebase...</span>
+            <span class="using-defaults" id="usingDefaultsBadge" style="display:none;">Using Demo Mode</span>
         </div>
         <div class="info">Last saved: <strong id="lastSavedLabel">Not yet</strong></div>
     </div>
 
-    <!-- ===== CARD 1: BUSINESS INFO ===== -->
+    <!-- CARD 1 -->
     <div class="admin-card">
         <h2>🏢 Business Information <span class="badge">Public</span></h2>
         <div class="form-row">
@@ -370,7 +224,7 @@
         <div class="form-row full">
             <div class="form-group">
                 <label for="businessAddress">Business Address</label>
-                <input type="text" id="businessAddress" placeholder="123 Main Street, City, Nigeria" />
+                <input type="text" id="businessAddress" placeholder="23b Admiralty Way, Lekki Phase 1, Lagos" />
             </div>
         </div>
         <div class="form-row">
@@ -380,50 +234,49 @@
             </div>
             <div class="form-group">
                 <label for="businessPhone">Phone Number</label>
-                <input type="text" id="businessPhone" placeholder="+234 800 000 0000" />
+                <input type="text" id="businessPhone" placeholder="+234 803 456 7890" />
             </div>
         </div>
     </div>
 
-    <!-- ===== CARD 2: FORM ENDPOINT ===== -->
+    <!-- CARD 2 -->
     <div class="admin-card card-orange">
         <h2>📩 FormFree / Form Endpoint <span class="badge">Contact Form</span></h2>
         <div class="form-group">
             <label for="formActionUrl">Form Action URL</label>
             <input type="url" id="formActionUrl" placeholder="https://formspree.io/f/your_form_id" />
             <div class="hint">
-                Paste your FormFree, Formspree, Web3Forms, or any form backend endpoint URL.
-                Get one free at <a href="https://formspree.io" target="_blank" style="color:var(--orange);">formspree.io</a>.
+                Paste your FormFree, Formspree, Web3Forms endpoint. Get one free at
+                <a href="https://formspree.io" target="_blank" style="color:var(--orange);">formspree.io</a>.
             </div>
         </div>
         <div class="preview-panel">
             <h3>🔗 Current Endpoint</h3>
-            <div id="formEndpointPreview" style="word-break:break-all;font-size:0.9rem;color:#555;background:#fff;padding:10px 14px;border-radius:8px;">
+            <div id="formEndpointPreview" style="word-break:break-all;font-size:.9rem;color:#555;background:#fff;padding:10px 14px;border-radius:8px;">
                 Not configured
             </div>
         </div>
     </div>
 
-    <!-- ===== CARD 3: GALLERY IMAGES ===== -->
+    <!-- CARD 3 -->
     <div class="admin-card card-gold">
         <h2>🖼️ Gallery Images <span class="badge">Carousel</span></h2>
-        <p style="font-size:0.9rem;color:#888;margin-bottom:16px;">
-            Add image URLs (hosted on imgur, Cloudinary, Google Photos, etc.) for the carousel slideshow.
-            Each URL becomes a slide. Supports up to 20 images.
+        <p style="font-size:.9rem;color:#888;margin-bottom:16px;">
+            Add image URLs for the carousel slideshow. Supports up to 20 images.
+            Use any hosted image URL (Imgur, Cloudinary, Google Photos, etc.)
         </p>
         <div id="imageUrlList" class="url-list"></div>
         <button class="add-url-btn" id="addImageUrl">+ Add Image URL</button>
         <div class="hint" style="margin-top:8px;">
-            Recommended: use square or landscape images (16:9 ratio works best). Supported formats: JPG, PNG, WebP.
+            Recommended: landscape orientation, 16:9 ratio. Formats: JPG, PNG, WebP.
         </div>
     </div>
 
-    <!-- ===== CARD 4: PREVIEW & SAVE ===== -->
+    <!-- CARD 4 -->
     <div class="admin-card card-teal">
         <h2>💾 Save to Firebase</h2>
-
         <div class="preview-panel">
-            <h3>📋 Preview of values to be saved</h3>
+            <h3>📋 Preview</h3>
             <div class="preview-grid" id="previewGrid">
                 <div class="pv-item"><strong>Name:</strong> <span id="pvName">—</span></div>
                 <div class="pv-item"><strong>Email:</strong> <span id="pvEmail">—</span></div>
@@ -433,47 +286,46 @@
                 <div class="pv-item"><strong>Form:</strong> <span id="pvFormStatus">Not set</span></div>
             </div>
         </div>
-
         <button class="btn-save" id="saveAllBtn" style="margin-top:20px;">
             💾 Save All Changes to Firebase
         </button>
+        <p style="text-align:center;margin-top:12px;font-size:.8rem;color:#999;">
+            ⚡ Changes appear on the live site immediately after saving
+        </p>
     </div>
 
-    <!-- ===== FIREBASE HELP ===== -->
+    <!-- HELP -->
     <div id="firebaseHelp" style="background:#f8f3e6;border-radius:14px;padding:28px 32px;margin-top:16px;">
         <h3 style="font-size:1.1rem;font-weight:700;color:var(--navy);margin-bottom:14px;">
             🔧 How to Set Up Firebase Realtime Database
         </h3>
-        <ol style="padding-left:20px;line-height:2;color:#555;font-size:0.9rem;">
-            <li>Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--orange);font-weight:600;">Firebase Console</a> and click <strong>Create a project</strong> (or use an existing one).</li>
-            <li>In your project, click <strong>Build</strong> &gt; <strong>Realtime Database</strong> &gt; <strong>Create Database</strong>.</li>
-            <li>Start in <strong>test mode</strong> (this allows read/write from anyone — fine for now).</li>
-            <li>Go to <strong>Project Settings</strong> ⚙️ &gt; <strong>General</strong> &gt; <strong>Your apps</strong> &gt; <strong>Web app</strong> (the <code>&lt;/&gt;</code> icon).</li>
-            <li>Register your app and <strong>copy the entire <code>firebaseConfig</code> object</strong>.</li>
-            <li><strong>Paste it into both</strong> <code>index.html</code> and <code>admin.html</code> (look for <code>const firebaseConfig = { ... }</code>).</li>
-            <li>Save both files, then open <code>admin.html</code> — you should see <strong>"Connected to Firebase"</strong>.</li>
+        <ol style="padding-left:20px;line-height:2.2;color:#555;font-size:.9rem;">
+            <li>Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--orange);font-weight:600;">Firebase Console</a> → <strong>Create a project</strong></li>
+            <li>Click <strong>Build</strong> → <strong>Realtime Database</strong> → <strong>Create Database</strong></li>
+            <li>Start in <strong>test mode</strong></li>
+            <li>Go to <strong>Project Settings</strong> ⚙️ → <strong>General</strong> → <strong>Your apps</strong> → <strong>Web app</strong> (<code>&lt;/&gt;</code>)</li>
+            <li>Register your app and <strong>copy the entire <code>firebaseConfig</code> object</strong></li>
+            <li><strong>Paste it into both</strong> <code>index.html</code> and <code>admin.html</code></li>
+            <li>Save both files, then open <code>admin.html</code></li>
         </ol>
-        <p style="margin-top:12px;font-size:0.85rem;color:#999;">
-            💡 <strong>Security Note:</strong> Test mode allows anyone to read/write. Once everything works, update your
-            <a href="https://firebase.google.com/docs/database/security" target="_blank" style="color:var(--orange);">Firebase Realtime Database Rules</a> for production.
+        <p style="margin-top:12px;padding:12px 16px;background:#fff3e0;border-radius:8px;font-size:.85rem;color:#333;">
+            💡 <strong>Demo mode:</strong> The site works with beautiful default images and data even
+            <em>without</em> Firebase configured. Once you add Firebase, admin saves will persist permanently.
         </p>
     </div>
 
 </div>
 
-<!-- ===== TOAST ===== -->
 <div class="toast" id="toast"></div>
 
-<!-- ===== JAVASCRIPT ===== -->
 <script>
 (function() {
     'use strict';
 
-    // ================================================================
-    // ⚠️  REPLACE THIS WITH YOUR FIREBASE PROJECT CONFIG  ⚠️
-    // ================================================================
-    // Use the SAME config as in index.html
-    const firebaseConfig = {
+    // ═══════════════════════════════════════════════════════
+    //  ←  REPLACE WITH YOUR FIREBASE CONFIG (same as index) →
+    // ═══════════════════════════════════════════════════════
+    var firebaseConfig = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_PROJECT.firebaseapp.com",
         databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
@@ -482,110 +334,102 @@
         messagingSenderId: "YOUR_SENDER_ID",
         appId: "YOUR_APP_ID"
     };
-    // ================================================================
+    // ═══════════════════════════════════════════════════════
 
-    // -------- 1. FIREBASE INIT --------
-    let db = null;
+    // Defaults
+    var DEFAULTS = {
+        businessName:    'O² Elliotosa Enterprises',
+        businessTagline: 'Building your vision from ground up — Construction · Websites · Solar & Inverters · Epoxy Flooring · Wiring · Interiors',
+        address:         '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
+        email:           'info@o2elliotosa.com',
+        phone:           '+234 803 456 7890',
+        formActionUrl:   '',
+        images: [
+            'https://picsum.photos/seed/gallery1/1200/675',
+            'https://picsum.photos/seed/gallery2/1200/675',
+            'https://picsum.photos/seed/gallery3/1200/675',
+            'https://picsum.photos/seed/gallery4/1200/675',
+            'https://picsum.photos/seed/gallery5/1200/675',
+            'https://picsum.photos/seed/gallery6/1200/675'
+        ]
+    };
+
+    var $ = function(id) { return document.getElementById(id); };
+    var db = null;
+    var firebaseReady = false;
+
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
-        console.log('✅ Firebase connected');
-    } catch (e) {
-        console.error('Firebase init failed:', e);
-        document.querySelector('.status-banner .live').textContent = '❌ Firebase connection failed';
-        document.querySelector('.status-banner .live-dot').style.background = '#c62828';
-        return;
+        firebaseReady = true;
+        $('connectionStatus').textContent = 'Connected to Firebase ✅';
+    } catch(e) {
+        $('connectionStatus').textContent = '⚠️ Firebase not configured — Demo Mode';
+        $('usingDefaultsBadge').style.display = 'inline';
+        console.warn('Firebase not configured. Running in demo mode with default data.');
     }
 
-    // -------- 2. DOM REFS --------
-    const $ = id => document.getElementById(id);
-
-    const businessName    = $('businessName');
-    const businessTagline = $('businessTagline');
-    const businessAddress = $('businessAddress');
-    const businessEmail   = $('businessEmail');
-    const businessPhone   = $('businessPhone');
-    const formActionUrl   = $('formActionUrl');
-    const imageUrlList    = $('imageUrlList');
-    const addImageBtn     = $('addImageUrl');
-    const saveAllBtn      = $('saveAllBtn');
-    const resetAllBtn     = $('resetAllBtn');
-    const lastSavedLabel  = $('lastSavedLabel');
-    const toastEl         = $('toast');
-    const formEndpointPreview = $('formEndpointPreview');
-
-    // Preview
-    const pvName      = $('pvName');
-    const pvEmail     = $('pvEmail');
-    const pvPhone     = $('pvPhone');
-    const pvAddress   = $('pvAddress');
-    const pvImageCount= $('pvImageCount');
-    const pvFormStatus= $('pvFormStatus');
-
-    const SETTINGS_PATH = 'settings';
-
-    // -------- 3. TOAST --------
-    let toastTimer = null;
-    function showToast(msg, isError = false) {
-        toastEl.textContent = msg;
-        toastEl.className = 'toast' + (isError ? ' error' : '');
-        void toastEl.offsetWidth;
-        toastEl.classList.add('show');
+    // Toast
+    var toastTimer = null;
+    function showToast(msg, isError) {
+        var t = $('toast');
+        t.textContent = msg;
+        t.className = 'toast' + (isError ? ' error' : '');
+        void t.offsetWidth;
+        t.classList.add('show');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+        toastTimer = setTimeout(function() { t.classList.remove('show'); }, 3200);
     }
 
-    // -------- 4. LOAD FROM FIREBASE --------
-    function loadFromFirebase() {
-        const ref = db.ref(SETTINGS_PATH);
-        ref.once('value').then((snapshot) => {
-            const data = snapshot.val() || {};
-            businessName.value    = data.businessName    || '';
-            businessTagline.value = data.businessTagline || '';
-            businessAddress.value = data.address         || '';
-            businessEmail.value   = data.email           || '';
-            businessPhone.value   = data.phone           || '';
-            formActionUrl.value   = data.formActionUrl   || '';
-            const images = Array.isArray(data.images) ? data.images : [];
-            renderImageUrls(images);
-            updatePreview();
-            updateLastSaved();
-            updateFormEndpointPreview();
-            console.log('✅ Settings loaded from Firebase');
-        }).catch((err) => {
-            console.error('Load error:', err);
-            showToast('❌ Failed to load settings from Firebase', true);
-        });
-    }
+    // Refs
+    var businessName    = $('businessName');
+    var businessTagline = $('businessTagline');
+    var businessAddress = $('businessAddress');
+    var businessEmail   = $('businessEmail');
+    var businessPhone   = $('businessPhone');
+    var formActionUrl   = $('formActionUrl');
+    var imageUrlList    = $('imageUrlList');
+    var addImageBtn     = $('addImageUrl');
+    var saveAllBtn      = $('saveAllBtn');
+    var resetAllBtn     = $('resetAllBtn');
+    var lastSavedLabel  = $('lastSavedLabel');
+    var formEndpointPreview = $('formEndpointPreview');
 
-    // -------- 5. IMAGE URL LIST --------
+    var pvName       = $('pvName');
+    var pvEmail      = $('pvEmail');
+    var pvPhone      = $('pvPhone');
+    var pvAddress    = $('pvAddress');
+    var pvImageCount = $('pvImageCount');
+    var pvFormStatus = $('pvFormStatus');
+
+    // Image URL list
     function renderImageUrls(urls) {
         imageUrlList.innerHTML = '';
-        if (!urls || urls.length === 0) {
-            urls = [''];
-        }
-        urls.forEach((url, idx) => {
-            const item = document.createElement('div');
+        var list = (urls && urls.length > 0) ? urls.slice() : [''];
+        list.forEach(function(url, idx) {
+            var item = document.createElement('div');
             item.className = 'url-item';
 
-            const input = document.createElement('input');
+            var input = document.createElement('input');
             input.type = 'url';
             input.placeholder = 'https://i.imgur.com/your-image.jpg';
             input.value = url;
-            input.dataset.index = idx;
-            input.addEventListener('input', () => { updatePreview(); updateThumb(item, input); });
+            input.addEventListener('input', function() {
+                updatePreview();
+                updateThumb(item, input);
+            });
 
-            const thumb = document.createElement('img');
+            var thumb = document.createElement('img');
             thumb.className = 'thumb';
             thumb.alt = 'Preview';
-            thumb.src = url.trim() ? url.trim() : '';
+            thumb.src = url.trim() || '';
             thumb.onerror = function() { this.src = ''; this.style.background = '#eee'; };
 
-            const removeBtn = document.createElement('button');
+            var removeBtn = document.createElement('button');
             removeBtn.className = 'remove-btn';
-            removeBtn.textContent = '✕';
-            removeBtn.addEventListener('click', () => {
-                const current = getImageUrlValues();
+            removeBtn.textContent = '\u2715';
+            removeBtn.addEventListener('click', function() {
+                var current = getImageUrlValues();
                 if (current.length <= 1) {
                     showToast('Need at least one URL row.', true);
                     return;
@@ -604,59 +448,59 @@
     }
 
     function updateThumb(item, input) {
-        const thumb = item.querySelector('.thumb');
-        if (thumb) {
-            thumb.src = input.value.trim() || '';
-        }
+        var thumb = item.querySelector('.thumb');
+        if (thumb) thumb.src = input.value.trim() || '';
     }
 
     function getImageUrlValues() {
-        const inputs = imageUrlList.querySelectorAll('input[type="url"]');
-        const urls = [];
-        inputs.forEach(inp => {
-            const val = inp.value.trim();
+        var inputs = imageUrlList.querySelectorAll('input[type="url"]');
+        var urls = [];
+        inputs.forEach(function(inp) {
+            var val = inp.value.trim();
             if (val) urls.push(val);
         });
         return urls;
     }
 
-    addImageBtn.addEventListener('click', () => {
-        const current = getImageUrlValues();
-        if (current.length >= 20) {
-            showToast('Maximum 20 images allowed.', true);
-            return;
-        }
+    addImageBtn.addEventListener('click', function() {
+        var current = getImageUrlValues();
+        if (current.length >= 20) { showToast('Maximum 20 images.', true); return; }
         current.push('');
         renderImageUrls(current);
     });
 
-    // -------- 6. PREVIEW --------
+    // Preview
     function updatePreview() {
         pvName.textContent = businessName.value.trim() || 'O² Elliotosa Enterprises';
         pvEmail.textContent = businessEmail.value.trim() || 'info@o2elliotosa.com';
-        pvPhone.textContent = businessPhone.value.trim() || '+234 800 000 0000';
-        pvAddress.textContent = businessAddress.value.trim() || '123 Main Street';
-        const urls = getImageUrlValues();
+        pvPhone.textContent = businessPhone.value.trim() || '+234 803 456 7890';
+        pvAddress.textContent = businessAddress.value.trim() || '23b Admiralty Way, Lekki Phase 1, Lagos';
+        var urls = getImageUrlValues();
         pvImageCount.textContent = urls.length;
         updateFormEndpointPreview();
     }
 
     function updateFormEndpointPreview() {
-        const val = formActionUrl.value.trim();
+        var val = formActionUrl.value.trim();
         formEndpointPreview.textContent = val || '⚠️ Not configured — contact form will not work';
         formEndpointPreview.style.color = val ? '#555' : '#c62828';
         pvFormStatus.textContent = val ? 'Configured ✅' : 'Not set ⚠️';
     }
 
-    // -------- 7. SAVE TO FIREBASE --------
+    // Save
     function saveToFirebase() {
-        const urls = getImageUrlValues();
-        const data = {
+        if (!firebaseReady) {
+            showToast('⚠️ Firebase not configured. Paste your config first.', true);
+            return;
+        }
+
+        var urls = getImageUrlValues();
+        var data = {
             businessName:    businessName.value.trim()    || 'O² Elliotosa Enterprises',
             businessTagline: businessTagline.value.trim() || 'Building & Digital Solutions',
-            address:         businessAddress.value.trim() || '123 Main Street, City, Nigeria',
+            address:         businessAddress.value.trim() || '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
             email:           businessEmail.value.trim()   || 'info@o2elliotosa.com',
-            phone:           businessPhone.value.trim()   || '+234 800 000 0000',
+            phone:           businessPhone.value.trim()   || '+234 803 456 7890',
             formActionUrl:   formActionUrl.value.trim()   || '',
             images:          urls
         };
@@ -664,16 +508,14 @@
         saveAllBtn.disabled = true;
         saveAllBtn.textContent = '⏳ Saving to Firebase...';
 
-        const ref = db.ref(SETTINGS_PATH);
-        ref.set(data).then(() => {
-            showToast('✅ All changes saved to Firebase! The site will update automatically.');
-            localStorage.setItem('buildpro_lastSaved_firebase', new Date().toISOString());
+        db.ref('settings').set(data).then(function() {
+            showToast('✅ Saved to Firebase! Refresh the site to see changes.');
+            localStorage.setItem('o2_lastSaved', new Date().toISOString());
             updateLastSaved();
             saveAllBtn.disabled = false;
             saveAllBtn.innerHTML = '💾 Save All Changes to Firebase';
-        }).catch((err) => {
-            console.error('Save error:', err);
-            showToast('❌ Failed to save to Firebase: ' + err.message, true);
+        }).catch(function(err) {
+            showToast('❌ Save failed: ' + err.message, true);
             saveAllBtn.disabled = false;
             saveAllBtn.innerHTML = '💾 Save All Changes to Firebase';
         });
@@ -681,62 +523,103 @@
 
     saveAllBtn.addEventListener('click', saveToFirebase);
 
-    // -------- 8. RESET --------
-    resetAllBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        if (!confirm('Reset ALL settings to defaults and delete from Firebase? This cannot be undone.')) return;
-
-        const ref = db.ref(SETTINGS_PATH);
-        ref.remove().then(() => {
-            localStorage.removeItem('buildpro_lastSaved_firebase');
-            loadFromFirebase();
-            showToast('↺ Settings reset. Firebase data cleared.');
-        }).catch((err) => {
-            showToast('❌ Reset failed: ' + err.message, true);
-        });
-    });
-
-    // -------- 9. LAST SAVED --------
-    function updateLastSaved() {
-        const saved = localStorage.getItem('buildpro_lastSaved_firebase');
-        if (saved) {
-            try {
-                lastSavedLabel.textContent = new Date(saved).toLocaleString();
-            } catch { lastSavedLabel.textContent = 'Unknown'; }
-        } else {
-            lastSavedLabel.textContent = 'Not yet';
+    // Load from Firebase
+    function loadFromFirebase() {
+        if (!firebaseReady) {
+            // Populate with defaults
+            businessName.value    = DEFAULTS.businessName;
+            businessTagline.value = DEFAULTS.businessTagline;
+            businessAddress.value = DEFAULTS.address;
+            businessEmail.value   = DEFAULTS.email;
+            businessPhone.value   = DEFAULTS.phone;
+            formActionUrl.value   = DEFAULTS.formActionUrl;
+            renderImageUrls(DEFAULTS.images);
+            updatePreview();
+            updateLastSaved();
+            return;
         }
+
+        db.ref('settings').once('value').then(function(snapshot) {
+            var data = snapshot.val() || {};
+            businessName.value    = data.businessName    || DEFAULTS.businessName;
+            businessTagline.value = data.businessTagline || DEFAULTS.businessTagline;
+            businessAddress.value = data.address         || DEFAULTS.address;
+            businessEmail.value   = data.email           || DEFAULTS.email;
+            businessPhone.value   = data.phone           || DEFAULTS.phone;
+            formActionUrl.value   = data.formActionUrl   || '';
+            var images = Array.isArray(data.images) ? data.images : DEFAULTS.images;
+            renderImageUrls(images);
+            updatePreview();
+            updateLastSaved();
+            showToast('✅ Settings loaded from Firebase');
+        }).catch(function(err) {
+            // Fallback to defaults
+            businessName.value    = DEFAULTS.businessName;
+            businessTagline.value = DEFAULTS.businessTagline;
+            businessAddress.value = DEFAULTS.address;
+            businessEmail.value   = DEFAULTS.email;
+            businessPhone.value   = DEFAULTS.phone;
+            formActionUrl.value   = DEFAULTS.formActionUrl;
+            renderImageUrls(DEFAULTS.images);
+            updatePreview();
+            showToast('⚠️ Using demo data (Firebase read failed)', true);
+        });
     }
 
-    // -------- 10. AUTO-UPDATE PREVIEW --------
-    let previewTimeout;
-    document.querySelectorAll('input, textarea').forEach(el => {
-        el.addEventListener('input', () => {
+    // Reset
+    resetAllBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        if (!confirm('Reset ALL settings and delete from Firebase? Cannot be undone.')) return;
+
+        if (firebaseReady) {
+            db.ref('settings').remove().then(function() {
+                localStorage.removeItem('o2_lastSaved');
+                loadFromFirebase();
+                showToast('↺ Reset complete. Firebase data cleared.');
+            }).catch(function(err) {
+                showToast('❌ Reset failed: ' + err.message, true);
+            });
+        } else {
+            localStorage.removeItem('o2_lastSaved');
+            loadFromFirebase();
+            showToast('↺ Reset complete.');
+        }
+    });
+
+    // Last saved
+    function updateLastSaved() {
+        var saved = localStorage.getItem('o2_lastSaved');
+        lastSavedLabel.textContent = saved ? new Date(saved).toLocaleString() : 'Not yet';
+    }
+
+    // Auto-preview
+    var previewTimeout;
+    document.querySelectorAll('input, textarea').forEach(function(el) {
+        el.addEventListener('input', function() {
             clearTimeout(previewTimeout);
             previewTimeout = setTimeout(updatePreview, 200);
         });
     });
 
-    // -------- 11. CTRL+S --------
-    document.addEventListener('keydown', (e) => {
+    // Ctrl+S
+    document.addEventListener('keydown', function(e) {
         if ((e.ctrlKey || e.metaKey) && e.key === 's') {
             e.preventDefault();
             saveToFirebase();
         }
     });
 
-    // -------- 12. INIT --------
+    // Listen for remote changes
+    if (firebaseReady && db) {
+        db.ref('settings').on('child_changed', function() {
+            loadFromFirebase();
+            showToast('🔄 Updated from another source.');
+        });
+    }
+
+    // Init
     loadFromFirebase();
-
-    // Listen for external changes to Firebase (e.g., from another admin tab)
-    db.ref(SETTINGS_PATH).on('child_changed', () => {
-        loadFromFirebase();
-        showToast('🔄 Settings changed from another source. Reloaded.');
-    });
-
-    console.log('✅ O² Elliotosa Admin Dashboard ready.');
-    console.log('   Data is stored in Firebase Realtime Database at path: /' + SETTINGS_PATH);
-
+    console.log('O² Elliotosa Admin ready.');
 })();
 </script>
 </body>
