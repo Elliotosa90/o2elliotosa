@@ -27,6 +27,7 @@
             --teal:#00897b;--cream:#fefae0;--warm:#fff8f0
         }
 
+        /* ─── TOP BAR WITH CLOCKS ─── */
         .top-bar{
             background:var(--navy);color:#ccc;padding:10px 0;font-size:.85rem
         }
@@ -34,7 +35,22 @@
             display:flex;justify-content:space-between;align-items:center;
             flex-wrap:wrap;gap:8px
         }
-        .top-bar span{display:inline-flex;align-items:center;gap:6px}
+        .top-bar-left{display:flex;gap:16px;flex-wrap:wrap}
+        .top-bar-left span{display:inline-flex;align-items:center;gap:6px}
+        .top-bar-right{
+            display:flex;gap:14px;align-items:center;flex-wrap:wrap
+        }
+        .clock-item{
+            display:flex;align-items:center;gap:4px;font-size:.78rem
+        }
+        .clock-item .flag{font-size:.85rem;line-height:1}
+        .clock-item .tz-time{
+            font-weight:600;font-variant-numeric:tabular-nums;
+            color:#e8dcc8;min-width:58px
+        }
+        .clock-item .tz-label{color:#9a8c78;font-size:.62rem;text-transform:uppercase;letter-spacing:.04em}
+        .clock-item.hidden-clock{display:none!important}
+        /* ---- end clocks ---- */
 
         nav{
             background:rgba(255,248,240,0.97);
@@ -92,22 +108,6 @@
             background:#c4935a;transform:translateY(-3px);
             box-shadow:0 12px 35px rgba(212,163,115,0.45)
         }
-
-        /* Beep badge */
-        .beep-badge{
-            position:fixed;bottom:24px;right:24px;
-            background:rgba(13,27,42,0.85);backdrop-filter:blur(8px);
-            color:var(--gold);padding:10px 20px;border-radius:30px;
-            font-size:.85rem;font-weight:600;z-index:999;
-            cursor:pointer;transition:all .3s;
-            box-shadow:0 4px 20px rgba(0,0,0,0.15);
-            border:1px solid rgba(212,163,115,0.2);
-            animation:beepPulse 2s ease-in-out infinite
-        }
-        @keyframes beepPulse{0%,100%{opacity:.85}50%{opacity:1}}
-        .beep-badge:hover{background:var(--navy);transform:scale(1.05)}
-        .beep-badge.played{opacity:.4;cursor:default;animation:none}
-        .beep-badge.played:hover{transform:none}
 
         .section-title{text-align:center;margin-bottom:50px}
         .section-title h2{
@@ -295,6 +295,7 @@
             .contact-wrapper{grid-template-columns:1fr}
             .nav-links{display:none}
             .top-bar .container{flex-direction:column;text-align:center}
+            .top-bar-left,.top-bar-right{justify-content:center}
             .carousel-btn{width:36px;height:36px;font-size:1.2rem}
             .services-grid{grid-template-columns:1fr}
             .about-stats{grid-template-columns:repeat(3,1fr);gap:10px}
@@ -305,15 +306,31 @@
 </head>
 <body>
 
-<!-- Beep badge -->
-<div class="beep-badge" id="beepBadge">🔊 Tap to hear welcome tone</div>
-
-<!-- Top bar -->
+<!-- ─── TOP BAR WITH CLOCKS ─── -->
 <div class="top-bar" id="topBar">
     <div class="container">
-        <span>📞 <span id="topPhone">23b Admiralty Way, Lekki Phase 1, Lagos</span></span>
-        <span>✉️ <span id="topEmail">info@o2elliotosa.com</span></span>
-        <span>📍 <span id="topAddress">+234 803 456 7890</span></span>
+        <div class="top-bar-left">
+            <span>📞 <span id="topPhone">+234 803 456 7890</span></span>
+            <span>✉️ <span id="topEmail">info@o2elliotosa.com</span></span>
+            <span>📍 <span id="topAddress">23b Admiralty Way, Lekki Phase 1, Lagos</span></span>
+        </div>
+        <div class="top-bar-right" id="worldClocks">
+            <div class="clock-item" data-clock="nigeria">
+                <span class="flag">🇳🇬</span>
+                <span class="tz-label">Nigeria</span>
+                <span class="tz-time" id="time-nigeria">--:--</span>
+            </div>
+            <div class="clock-item" data-clock="useastern">
+                <span class="flag">🇺🇸</span>
+                <span class="tz-label">US Eastern</span>
+                <span class="tz-time" id="time-useastern">--:--</span>
+            </div>
+            <div class="clock-item" data-clock="toronto">
+                <span class="flag">🇨🇦</span>
+                <span class="tz-label">Toronto</span>
+                <span class="tz-time" id="time-toronto">--:--</span>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -380,7 +397,7 @@
             <div class="bar"></div>
         </div>
         <div class="services-grid">
-            <!-- Card 1 - Construction -->
+            <!-- Card 1 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgConstruction" src="https://picsum.photos/seed/o2-construction/800/500" alt="Construction" loading="lazy" /></div>
                 <div class="card-body">
@@ -389,7 +406,7 @@
                     <p>Custom homes, extensions, and renovations — quality craftsmanship from foundation to roofing. We build structures that last.</p>
                 </div>
             </div>
-            <!-- Card 2 - Website -->
+            <!-- Card 2 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWebsite" src="https://picsum.photos/seed/o2-website/800/500" alt="Website Development" loading="lazy" /></div>
                 <div class="card-body">
@@ -398,7 +415,7 @@
                     <p>Modern, responsive websites and e-commerce platforms tailored to grow your business. Clean code, stunning design, fast delivery.</p>
                 </div>
             </div>
-            <!-- Card 3 - Solar -->
+            <!-- Card 3 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgSolar" src="https://picsum.photos/seed/o2-solar/800/500" alt="Solar Installation" loading="lazy" /></div>
                 <div class="card-body">
@@ -407,7 +424,7 @@
                     <p>Grid-tied and off-grid solar systems, battery backup, and inverter solutions for true energy independence and lower bills.</p>
                 </div>
             </div>
-            <!-- Card 4 - Flooring -->
+            <!-- Card 4 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgFlooring" src="https://picsum.photos/seed/o2-flooring/800/500" alt="Epoxy Flooring" loading="lazy" /></div>
                 <div class="card-body">
@@ -416,7 +433,7 @@
                     <p>Durable high-gloss epoxy, polyaspartic coatings, and decorative stamped concrete for garages, showrooms, and homes.</p>
                 </div>
             </div>
-            <!-- Card 5 - Wiring -->
+            <!-- Card 5 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWiring" src="https://picsum.photos/seed/o2-wiring/800/500" alt="Electrical Wiring" loading="lazy" /></div>
                 <div class="card-body">
@@ -425,7 +442,7 @@
                     <p>Full electrical services — new wiring, rewiring, lighting design, panel upgrades, and complete smart home integration.</p>
                 </div>
             </div>
-            <!-- Card 6 - Interior -->
+            <!-- Card 6 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgInterior" src="https://picsum.photos/seed/o2-interior/800/500" alt="Interior Design" loading="lazy" /></div>
                 <div class="card-body">
@@ -447,7 +464,7 @@
             <div class="bar"></div>
         </div>
         <div id="carouselContainer">
-            <!-- Built by JavaScript immediately — no loading state -->
+            <!-- Built by JavaScript -->
         </div>
     </div>
 </section>
@@ -522,7 +539,7 @@
     'use strict';
 
     // ================================================================
-    //  1. DEFAULTS — displayed IMMEDIATELY, no loading state ever
+    //  1. DEFAULTS — displayed immediately, no loading state
     // ================================================================
     var DEFAULTS = {
         businessName:     'O² Elliotosa Enterprises',
@@ -544,11 +561,12 @@
             {url:'https://picsum.photos/seed/o2-gallery4/1200/675', caption:'Epoxy & Stamping Flooring'},
             {url:'https://picsum.photos/seed/o2-gallery5/1200/675', caption:'Electrical Wiring & Installation'},
             {url:'https://picsum.photos/seed/o2-gallery6/1200/675', caption:'Interior Design & Decoration'}
-        ]
+        ],
+        clockVisibility: { nigeria: true, useastern: true, toronto: true }
     };
 
     // ================================================================
-    //  2. FIREBASE CONFIG — replace with your own
+    //  2. FIREBASE CONFIG — replace with your own project
     // ================================================================
     var firebaseConfig = {
         apiKey: "YOUR_API_KEY",
@@ -561,24 +579,59 @@
     };
 
     // ================================================================
-    //  3. INIT — apply defaults FIRST, then overlay Firebase if available
+    //  3. DOM HELPERS
     // ================================================================
     var $ = function(id) { return document.getElementById(id); };
     var currentData = JSON.parse(JSON.stringify(DEFAULTS));
 
-    // Apply data to the page
+    // ================================================================
+    //  4. CLOCK SYSTEM — runs every 10 seconds
+    // ================================================================
+    var TZ_MAP = {
+        nigeria:   { timezone: 'Africa/Lagos',      label: 'WAT' },
+        useastern: { timezone: 'America/New_York',   label: 'ET'  },
+        toronto:   { timezone: 'America/Toronto',    label: 'ET'  }
+    };
+
+    function updateClocks() {
+        var now = new Date();
+        for (var key in TZ_MAP) {
+            var el = document.getElementById('time-' + key);
+            if (!el) continue;
+            el.textContent = now.toLocaleTimeString('en-US', {
+                timeZone: TZ_MAP[key].timezone,
+                hour: '2-digit', minute: '2-digit', hour12: true
+            });
+        }
+    }
+
+    function applyClockVisibility(vis) {
+        vis = vis || currentData.clockVisibility || DEFAULTS.clockVisibility;
+        var items = document.querySelectorAll('[data-clock]');
+        items.forEach(function(item) {
+            var key = item.getAttribute('data-clock');
+            item.classList.toggle('hidden-clock', vis[key] === false);
+        });
+    }
+
+    updateClocks();
+    setInterval(updateClocks, 10000);
+
+    // ================================================================
+    //  5. APPLY DATA TO PAGE
+    // ================================================================
     function applyData(d) {
-        $('topPhone').textContent       = d.phone;
-        $('topEmail').textContent       = d.email;
-        $('topAddress').textContent     = d.address;
-        $('heroTagline').textContent    = d.businessTagline;
-        $('ciAddress').textContent      = d.address;
-        $('ciEmail').textContent        = d.email;
-        $('ciPhone').textContent        = d.phone;
-        $('footerTagline').textContent  = d.businessTagline || 'Building & Digital Solutions';
-        $('footerAddress').textContent  = d.address;
-        $('footerContactLine').textContent = '\u{1F4DE} ' + d.phone + '  \u{00B7}  \u{2709}\u{FE0F} ' + d.email;
-        $('footerYear').textContent     = new Date().getFullYear();
+        $('topPhone').textContent        = d.phone || DEFAULTS.phone;
+        $('topEmail').textContent        = d.email || DEFAULTS.email;
+        $('topAddress').textContent      = d.address || DEFAULTS.address;
+        $('heroTagline').textContent     = d.businessTagline || DEFAULTS.businessTagline;
+        $('ciAddress').textContent       = d.address || DEFAULTS.address;
+        $('ciEmail').textContent         = d.email || DEFAULTS.email;
+        $('ciPhone').textContent         = d.phone || DEFAULTS.phone;
+        $('footerTagline').textContent   = d.businessTagline || 'Building & Digital Solutions';
+        $('footerAddress').textContent   = d.address || DEFAULTS.address;
+        $('footerContactLine').textContent = '\u{1F4DE} ' + (d.phone || DEFAULTS.phone) + '  \u{00B7}  \u{2709}\u{FE0F} ' + (d.email || DEFAULTS.email);
+        $('footerYear').textContent      = new Date().getFullYear();
 
         // Service images
         if (d.imgConstruction) $('imgConstruction').src = d.imgConstruction;
@@ -594,9 +647,14 @@
 
         // Gallery
         buildCarousel(d.galleryImages || []);
+
+        // Clock visibility
+        applyClockVisibility(d.clockVisibility);
     }
 
-    // Gallery carousel builder
+    // ================================================================
+    //  6. GALLERY CAROUSEL
+    // ================================================================
     function buildCarousel(images) {
         var container = $('carouselContainer');
         if (!container) return;
@@ -649,108 +707,89 @@
 
         if (prev) prev.addEventListener('click', function() { goTo(current - 1); });
         if (next) next.addEventListener('click', function() { goTo(current + 1); });
-
-        var autoTimer = setInterval(function() { goTo(current + 1); }, 5000);
-        var wrap = container.querySelector('.carousel-wrap');
-        if (wrap) {
-            wrap.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
-            wrap.addEventListener('mouseleave', function() {
-                autoTimer = setInterval(function() { goTo(current + 1); }, 5000);
-            });
-        }
     }
 
     // Apply defaults immediately — NO loading state
     applyData(DEFAULTS);
 
     // ================================================================
-    //  4. BEEP SOUND — on first user interaction only
+    //  7. BEEP — sweet chime on first user interaction (no badge)
     // ================================================================
     var audioCtx = null;
     var beepPlayed = false;
-    var beepBadge = $('beepBadge');
 
     function initAudio() {
         if (audioCtx) return;
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch(e) {}
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
     }
 
     function playBeep() {
         if (beepPlayed || !audioCtx) return;
+        beepPlayed = true;
         try {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            var osc = audioCtx.createOscillator();
-            var gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 415.30;
-            osc.type = 'sine';
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.12);
-            gain.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 1.8);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.0);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 2.0);
-            beepPlayed = true;
-            if (beepBadge) {
-                beepBadge.textContent = '🔊 Welcome tone played ✓';
-                beepBadge.classList.add('played');
-            }
+
+            var t = audioCtx.currentTime;
+
+            // Two-tone chime: C5 (523) → E5 (659) — warm and sweet
+            var notes = [523.25, 659.25];
+            notes.forEach(function(freq, i) {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                var start = t + i * 0.14;
+                gain.gain.setValueAtTime(0.001, start);
+                gain.gain.linearRampToValueAtTime(0.16, start + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.001, start + 0.55);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(start);
+                osc.stop(start + 0.6);
+            });
+
+            // Soft octave harmonic for richness
+            var osc2 = audioCtx.createOscillator();
+            var gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.value = 1046.5;
+            gain2.gain.setValueAtTime(0.001, t + 0.05);
+            gain2.gain.linearRampToValueAtTime(0.045, t + 0.09);
+            gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.start(t + 0.05);
+            osc2.stop(t + 0.6);
         } catch(e) {}
     }
 
-    function onFirstInteraction(e) {
+    // Fire on first user gesture (touch, scroll, click, keydown)
+    var gestureEvents = ['touchstart', 'scroll', 'mousedown', 'keydown'];
+    function onGesture(e) {
         initAudio();
-        // Short delay to ensure AudioContext is ready
-        setTimeout(playBeep, 100);
-        // Remove badge click listener after first use
-        if (beepBadge) beepBadge.removeEventListener('click', onFirstInteraction);
+        setTimeout(playBeep, 80);
+        gestureEvents.forEach(function(ev) {
+            document.removeEventListener(ev, onGesture, { capture: true });
+        });
     }
-
-    // Set up the badge click
-    if (beepBadge) {
-        beepBadge.addEventListener('click', onFirstInteraction);
-    }
-
-    // Also listen for ANY user interaction as fallback
-    document.addEventListener('click', function(e) {
-        // Don't double-fire from badge click
-        if (e.target && e.target.closest && e.target.closest('#beepBadge')) return;
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
-    document.addEventListener('touchstart', function() {
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
-    document.addEventListener('keydown', function() {
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
+    gestureEvents.forEach(function(ev) {
+        document.addEventListener(ev, onGesture, { passive: true, capture: true });
+    });
 
     // ================================================================
-    //  5. FIREBASE — overlay on defaults if available
+    //  8. FIREBASE — overlay on defaults if available
     // ================================================================
     var db = null;
     try {
         firebase.initializeApp(firebaseConfig);
         db = firebase.database();
     } catch(e) {
-        console.log('Firebase not configured. Using default data.');
+        console.log('Firebase not configured. Using defaults.');
     }
 
     if (db) {
         db.ref('settings').on('value', function(snapshot) {
             var fbData = snapshot.val() || {};
-            // Merge FB data over defaults (only overwrite what FB provides)
             for (var key in fbData) {
                 if (fbData.hasOwnProperty(key)) {
                     currentData[key] = fbData[key];
@@ -763,7 +802,7 @@
     }
 
     // ================================================================
-    //  6. FORM HANDLER
+    //  9. FORM HANDLER
     // ================================================================
     var formEl = $('contactForm');
     var submitBtn = $('submitBtn');
@@ -819,7 +858,7 @@
         });
     }
 
-    console.log('O² Elliotosa loaded. Tap the beep badge 🔊 for sound.');
+    console.log('O² Elliotosa Enterprises loaded.');
 })();
 </script>
 </body>
