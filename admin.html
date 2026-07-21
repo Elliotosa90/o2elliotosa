@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BuildPro — Admin Dashboard</title>
+    <style>
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f0ede6;
+            color: #2c2c2c;
+        }
+
+        /* ===== ADMIN LAYOUT ===== */
+        .admin-header {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.15);
+        }
+        .admin-header h1 { font-size: 1.5rem; }
+        .admin-header h1 span { color: #f9a825; }
+        .admin-header .subtitle { font-size: 0.85rem; opacity: 0.7; }
+        .admin-header .actions { display: flex; gap: 12px; }
+        .admin-header .actions a {
+            color: #fff;
+            text-decoration: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.3s;
+        }
+        .admin-header .actions a.view-site { background: #e65100; }
+        .admin-header .actions a.view-site:hover { background: #bf360c; }
+        .admin-header .actions a.reset-btn { background: rgba(255,255,255,0.15); }
+        .admin-header .actions a.reset-btn:hover { background: rgba(255,255,255,0.25); }
+
+        .admin-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 30px 20px 80px;
+        }
+
+        /* ===== STATUS BANNER ===== */
+        .status-banner {
+            background: #fff;
+            border-radius: 14px;
+            padding: 16px 24px;
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            border-left: 5px solid #00695c;
+        }
+        .status-banner .live { color: #00695c; font-weight: 700; }
+        .status-banner .saved-label { color: #888; font-size: 0.9rem; }
+        .status-banner .saved-label strong { color: #2c2c2c; }
+
+        /* ===== CARDS ===== */
+        .admin-card {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-top: 5px solid #1a237e;
+        }
+        .admin-card:nth-child(2) { border-top-color: #e65100; }
+        .admin-card:nth-child(3) { border-top-color: #f9a825; }
+        .admin-card:nth-child(4) { border-top-color: #00695c; }
+
+        .admin-card h2 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .admin-card h2 .badge {
+            font-size: 0.7rem;
+            background: #e0dcd4;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        /* ===== FORM ELEMENTS ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 16px;
+        }
+        .form-row.full { grid-template-columns: 1fr; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 0.85rem;
+            color: #555;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #e0dcd4;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            background: #fefaf0;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #1a237e;
+        }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group .hint {
+            font-size: 0.78rem;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* TikTok URL list */
+        .url-list { margin-top: 12px; }
+        .url-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            background: #f5f0e8;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .url-item input { flex: 1; }
+        .url-item .remove-btn {
+            background: #fbe9e7;
+            border: none;
+            color: #c62828;
+            width: 32px; height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: background 0.3s;
+        }
+        .url-item .remove-btn:hover { background: #ffcdd2; }
+        .add-url-btn {
+            background: #e8f5e9;
+            border: 2px dashed #43a047;
+            color: #2e7d32;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            width: 100%;
+            transition: background 0.3s;
+            margin-top: 8px;
+        }
+        .add-url-btn:hover { background: #c8e6c9; }
+
+        /* ===== BUTTONS ===== */
+        .btn-save {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26,35,126,0.3);
+        }
+
+        .btn-save-small {
+            background: linear-gradient(135deg, #00695c, #00897b);
+            color: #fff;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: opacity 0.3s;
+        }
+        .btn-save-small:hover { opacity: 0.9; }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #2e7d32;
+            color: #fff;
+            padding: 16px 28px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 999;
+        }
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+        .toast.error { background: #c62828; }
+
+        /* ===== PREVIEW PANEL ===== */
+        .preview-panel {
+            background: #fff;
+            border-radius: 14px;
+            padding: 28px 32px;
+            border: 2px dashed #e0dcd4;
+            margin-top: 24px;
+        }
+        .preview-panel h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #888;
+            margin-bottom: 16px;
+        }
+        .preview-item {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .preview-item div {
+            background: #f5f0e8;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .preview-item div strong { color: #1a237e; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .admin-header { flex-direction: column; gap: 12px; text-align: center; }
+            .admin-header .actions { flex-wrap: wrap; justify-content: center; }
+            .admin-card { padding: 20px; }
+            .status-banner { flex-direction: column; gap: 8px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="admin-header">
+    <div>
+        <h1>⚙️ <span>BuildPro</span> Admin</h1>
+        <div class="subtitle">Manage your business website — changes go live immediately</div>
+    </div>
+    <div class="actions">
+        <a href="index.html" target="_blank" class="view-site">🔍 View Site</a>
+        <a href="#" class="reset-btn" id="resetAllBtn">↺ Reset All</a>
+    </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<div class="admin-container">
+
+    <!-- Status -->
+    <div class="status-banner">
+        <div>📡 <span class="live">● Live</span> — Changes saved to <strong>localStorage</strong></div>
+        <div class="saved-label">Last saved: <strong id="lastSavedLabel">Never</strong></div>
+    </div>
+
+    <!-- ===== CARD 1: BUSINESS INFO ===== -->
+    <div class="admin-card">
+        <h2>🏢 Business Information <span class="badge">Public</span></h2>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="businessName">Business Name</label>
+                <input type="text" id="businessName" placeholder="BuildPro" />
+            </div>
+            <div class="form-group">
+                <label for="businessTagline">Tagline / Hero Text</label>
+                <input type="text" id="businessTagline" placeholder="Building & Design Experts" />
+            </div>
+        </div>
+        <div class="form-row full">
+            <div class="form-group">
+                <label for="businessAddress">Business Address</label>
+                <input type="text" id="businessAddress" placeholder="123 Main Street, City, State 10001" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="businessEmail">Email Address</label>
+                <input type="email" id="businessEmail" placeholder="info@buildpro.com" />
+            </div>
+            <div class="form-group">
+                <label for="businessPhone">Phone Number</label>
+                <input type="text" id="businessPhone" placeholder="+1 (555) 000-1234" />
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CARD 2: FORM ENDPOINT ===== -->
+    <div class="admin-card">
+        <h2>📩 FormFree / Form Endpoint <span class="badge">Contact Form</span></h2>
+        <div class="form-group">
+            <label for="formActionUrl">Form Action URL</label>
+            <input type="url" id="formActionUrl" placeholder="https://formspree.io/f/your_form_id" />
+            <div class="hint">
+                Paste your FormFree, Formspree, Web3Forms, or any form backend endpoint URL.
+                Get one free at <a href="https://formspree.io" target="_blank" style="color:#e65100;">formspree.io</a>.
+            </div>
+        </div>
+        <div class="preview-panel">
+            <h3>🔗 Current Form Endpoint</h3>
+            <div id="formEndpointPreview" style="word-break:break-all;font-size:0.9rem;color:#555;background:#f5f0e8;padding:10px 14px;border-radius:8px;">
+                Not configured yet
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CARD 3: SOCIAL MEDIA (TIKTOK ONLY) ===== -->
+    <div class="admin-card">
+        <h2>🎵 TikTok <span class="badge">Carousel</span></h2>
+
+        <div class="form-group">
+            <label for="tiktokSocial">TikTok Profile URL (for footer link)</label>
+            <input type="url" id="tiktokSocial" placeholder="https://www.tiktok.com/@yourbusiness" />
+            <div class="hint">This links your TikTok profile in the site footer.</div>
+        </div>
+
+        <div style="margin-top:20px;">
+            <label style="display:block;font-weight:600;margin-bottom:8px;font-size:0.85rem;color:#555;">
+                TikTok Video URLs (for carousel)
+            </label>
+            <div id="tiktokUrlList" class="url-list"></div>
+            <button class="add-url-btn" id="addTiktokUrl">+ Add TikTok Video URL</button>
+            <div class="hint" style="margin-top:6px;">
+                Paste TikTok video URLs (e.g., https://www.tiktok.com/@user/video/123456789).<br/>
+                Each URL becomes a slide in the carousel. Add up to 10.
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== CARD 4: PREVIEW & SAVE ===== -->
+    <div class="admin-card">
+        <h2>💾 Save & Preview</h2>
+        <div class="preview-panel">
+            <h3>📋 Current Values (will be saved)</h3>
+            <div class="preview-item" id="previewContainer">
+                <div><strong>Name:</strong> <span id="previewName">—</span></div>
+                <div><strong>Email:</strong> <span id="previewEmail">—</span></div>
+                <div><strong>Phone:</strong> <span id="previewPhone">—</span></div>
+                <div><strong>Address:</strong> <span id="previewAddress">—</span></div>
+                <div><strong>TikTok URLs:</strong> <span id="previewTiktokCount">0</span></div>
+            </div>
+        </div>
+
+        <button class="btn-save" id="saveAllBtn" style="margin-top:20px;">
+            💾 Save All Changes
+        </button>
+    </div>
+
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"></div>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ===== REFS =====
+        const $ = id => document.getElementById(id);
+        const businessName   = $('businessName');
+        const businessTagline= $('businessTagline');
+        const businessAddress= $('businessAddress');
+        const businessEmail  = $('businessEmail');
+        const businessPhone  = $('businessPhone');
+        const formActionUrl  = $('formActionUrl');
+        const tiktokSocial   = $('tiktokSocial');
+        const tiktokUrlList  = $('tiktokUrlList');
+        const addTiktokBtn   = $('addTiktokUrl');
+        const saveAllBtn     = $('saveAllBtn');
+        const resetAllBtn    = $('resetAllBtn');
+        const lastSavedLabel = $('lastSavedLabel');
+        const toastEl        = $('toast');
+        const formEndpointPreview = $('formEndpointPreview');
+
+        // Preview spans
+        const previewName    = $('previewName');
+        const previewEmail   = $('previewEmail');
+        const previewPhone   = $('previewPhone');
+        const previewAddress = $('previewAddress');
+        const previewTiktokCount = $('previewTiktokCount');
+
+        const STORAGE_KEY = 'buildpro_settings';
+
+        // ===== TOAST =====
+        let toastTimer = null;
+        function showToast(msg, isError = false) {
+            toastEl.textContent = msg;
+            toastEl.className = 'toast' + (isError ? ' error' : '');
+            // Force reflow
+            void toastEl.offsetWidth;
+            toastEl.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+        }
+
+        // ===== LOAD =====
+        function loadSettings() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return {};
+                return JSON.parse(raw);
+            } catch { return {}; }
+        }
+
+        function populateForm() {
+            const s = loadSettings();
+            businessName.value    = s.businessName    || '';
+            businessTagline.value = s.businessTagline || '';
+            businessAddress.value = s.address         || '';
+            businessEmail.value   = s.email           || '';
+            businessPhone.value   = s.phone           || '';
+            formActionUrl.value   = s.formActionUrl   || '';
+            tiktokSocial.value    = s.tiktokSocial    || '';
+            const urls = Array.isArray(s.tiktokUrls) ? s.tiktokUrls : [];
+            renderTiktokUrls(urls);
+            updatePreview();
+            updateLastSaved();
+            updateFormEndpointPreview();
+        }
+
+        // ===== TIKTOK URL LIST =====
+        function renderTiktokUrls(urls) {
+            tiktokUrlList.innerHTML = '';
+            if (!urls.length) {
+                // Add one empty row
+                urls = [''];
+            }
+            urls.forEach((url, idx) => {
+                const item = document.createElement('div');
+                item.className = 'url-item';
+                const input = document.createElement('input');
+                input.type = 'url';
+                input.placeholder = 'https://www.tiktok.com/@user/video/...';
+                input.value = url;
+                input.dataset.index = idx;
+                input.addEventListener('input', updatePreview);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = '✕';
+                removeBtn.addEventListener('click', () => {
+                    const current = getTiktokUrlValues();
+                    if (current.length <= 1) {
+                        showToast('Need at least one URL row.', true);
+                        return;
+                    }
+                    current.splice(idx, 1);
+                    renderTiktokUrls(current);
+                    updatePreview();
+                });
+
+                item.appendChild(input);
+                item.appendChild(removeBtn);
+                tiktokUrlList.appendChild(item);
+            });
+            updatePreview();
+        }
+
+        function getTiktokUrlValues() {
+            const inputs = tiktokUrlList.querySelectorAll('input[type="url"]');
+            const urls = [];
+            inputs.forEach(inp => {
+                const val = inp.value.trim();
+                if (val) urls.push(val);
+            });
+            return urls;
+        }
+
+        addTiktokBtn.addEventListener('click', () => {
+            const current = getTiktokUrlValues();
+            if (current.length >= 10) {
+                showToast('Maximum 10 TikTok URLs allowed.', true);
+                return;
+            }
+            current.push('');
+            renderTiktokUrls(current);
+        });
+
+        // ===== PREVIEW =====
+        function updatePreview() {
+            previewName.textContent = businessName.value || 'BuildPro';
+            previewEmail.textContent = businessEmail.value || 'info@buildpro.com';
+            previewPhone.textContent = businessPhone.value || '+1 (555) 000-1234';
+            previewAddress.textContent = businessAddress.value || '123 Main Street';
+            const urls = getTiktokUrlValues();
+            previewTiktokCount.textContent = urls.length + (urls.length === 1 ? ' URL' : ' URLs');
+            updateFormEndpointPreview();
+        }
+
+        function updateFormEndpointPreview() {
+            const val = formActionUrl.value.trim();
+            formEndpointPreview.textContent = val || '⚠️ Not configured — contact form will NOT work';
+            formEndpointPreview.style.color = val ? '#555' : '#c62828';
+        }
+
+        // ===== LAST SAVED =====
+        function updateLastSaved() {
+            const saved = localStorage.getItem('buildpro_lastSaved');
+            if (saved) {
+                try {
+                    const d = new Date(saved);
+                    lastSavedLabel.textContent = d.toLocaleString();
+                } catch {
+                    lastSavedLabel.textContent = 'Unknown';
+                }
+            } else {
+                lastSavedLabel.textContent = 'Never';
+            }
+        }
+
+        // ===== SAVE =====
+        function saveSettings() {
+            const urls = getTiktokUrlValues();
+            const settings = {
+                businessName:    businessName.value.trim()    || 'BuildPro',
+                businessTagline: businessTagline.value.trim() || 'Building & Design Experts',
+                address:         businessAddress.value.trim() || '123 Main Street, City, State 10001',
+                email:           businessEmail.value.trim()   || 'info@buildpro.com',
+                phone:           businessPhone.value.trim()   || '+1 (555) 000-1234',
+                formActionUrl:   formActionUrl.value.trim()   || '',
+                tiktokSocial:    tiktokSocial.value.trim()    || '',
+                tiktokUrls:      urls
+            };
+
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+            localStorage.setItem('buildpro_lastSaved', new Date().toISOString());
+            updateLastSaved();
+            showToast('✅ All changes saved! Refresh the site to see updates.');
+            updatePreview();
+        }
+
+        saveAllBtn.addEventListener('click', saveSettings);
+
+        // ===== RESET =====
+        resetAllBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!confirm('Reset ALL settings to defaults? This cannot be undone.')) return;
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.removeItem('buildpro_lastSaved');
+            populateForm();
+            showToast('↺ Settings reset to defaults.');
+        });
+
+        // ===== AUTO-SAVE ON INPUT (debounced preview only) =====
+        let previewTimeout;
+        document.querySelectorAll('input, textarea').forEach(el => {
+            el.addEventListener('input', () => {
+                clearTimeout(previewTimeout);
+                previewTimeout = setTimeout(updatePreview, 200);
+            });
+        });
+
+        // ===== CTRL+S =====
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveSettings();
+            }
+        });
+
+        // ===== INIT =====
+        populateForm();
+
+        // Also listen for storage changes from other tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === STORAGE_KEY) {
+                populateForm();
+                showToast('🔄 Settings updated from another tab.');
+            }
+        });
+
+        console.log('✅ BuildPro Admin ready. Manage your website settings above.');
+        console.log('   Changes are stored in localStorage and reflected immediately on index.html');
+
+    })();
+</script>
+</body>
+</html>
