@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>BuildPro — Building & Design</title>
+    <style>
+        /* ===== RESET & BASE ===== */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #fefaf0;
+            color: #2c2c2c;
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+        a { text-decoration:none; color:inherit; }
+        img { max-width:100%; display:block; }
+
+        /* ===== COLOR UTILITIES ===== */
+        .bg-primary   { background: #1a237e; }
+        .bg-secondary { background: #e65100; }
+        .bg-teal      { background: #00695c; }
+        .bg-gold      { background: #f9a825; }
+        .text-primary   { color: #1a237e; }
+        .text-secondary { color: #e65100; }
+        .text-teal      { color: #00695c; }
+        .text-gold      { color: #f9a825; }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        section { padding: 80px 0; }
+
+        /* ===== HEADER / NAV ===== */
+        .top-bar {
+            background: #1a237e;
+            color: #fff;
+            padding: 10px 0;
+            font-size: 0.85rem;
+        }
+        .top-bar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .top-bar a { color: #ffcc80; }
+        .top-bar a:hover { color: #fff; }
+
+        nav {
+            background: #fff;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            padding-bottom: 14px;
+        }
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1a237e, #e65100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .logo span { font-weight: 300; color: #00695c; -webkit-text-fill-color: #00695c; }
+        .nav-links { display: flex; gap: 28px; font-weight: 600; }
+        .nav-links a { color: #2c2c2c; transition: color 0.3s; }
+        .nav-links a:hover { color: #e65100; }
+
+        /* ===== HERO ===== */
+        .hero {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 40%, #e65100 100%);
+            color: #fff;
+            text-align: center;
+            padding: 100px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(249,168,37,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 30%, rgba(0,105,92,0.15) 0%, transparent 50%);
+            animation: heroGlow 12s ease-in-out infinite alternate;
+        }
+        @keyframes heroGlow {
+            0%   { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(2%, -2%) rotate(3deg); }
+        }
+        .hero * { position: relative; z-index: 1; }
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        .hero h1 span { color: #f9a825; }
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            opacity: 0.9;
+        }
+        .hero .btn-outline {
+            display: inline-block;
+            border: 2px solid #f9a825;
+            color: #f9a825;
+            padding: 14px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .hero .btn-outline:hover {
+            background: #f9a825;
+            color: #1a237e;
+        }
+
+        /* ===== SECTION HEADERS ===== */
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .section-title h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            display: inline-block;
+            background: linear-gradient(135deg, #1a237e, #e65100);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+        .section-title p {
+            color: #666;
+            max-width: 550px;
+            margin: 0 auto;
+            font-size: 1.05rem;
+        }
+        .section-title .underline {
+            width: 80px; height: 4px;
+            background: linear-gradient(90deg, #e65100, #f9a825);
+            margin: 12px auto 0;
+            border-radius: 4px;
+        }
+
+        /* ===== SERVICES ===== */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 28px;
+        }
+        .service-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 36px 28px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-top: 5px solid;
+            text-align: center;
+        }
+        .service-card:nth-child(1) { border-color: #1a237e; }
+        .service-card:nth-child(2) { border-color: #e65100; }
+        .service-card:nth-child(3) { border-color: #f9a825; }
+        .service-card:nth-child(4) { border-color: #00695c; }
+        .service-card:nth-child(5) { border-color: #e65100; }
+        .service-card:nth-child(6) { border-color: #1a237e; }
+
+        .service-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+        }
+        .service-card .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        .service-card h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .service-card p { color: #666; font-size: 0.95rem; }
+
+        /* ===== TIKTOK CAROUSEL ===== */
+        #social-section { background: #f5f0e8; }
+        .carousel-container {
+            position: relative;
+            max-width: 900px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        .carousel-slide {
+            min-width: 100%;
+            padding: 0 40px;
+            display: flex;
+            justify-content: center;
+        }
+        .carousel-slide blockquote {
+            max-width: 498px;
+            width: 100%;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fff;
+            border: none;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            cursor: pointer;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #1a237e;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        .carousel-btn:hover { background: #1a237e; color: #fff; }
+        .carousel-btn.prev { left: 4px; }
+        .carousel-btn.next { right: 4px; }
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .carousel-dots button {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            border: 2px solid #1a237e;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .carousel-dots button.active { background: #1a237e; }
+
+        /* ===== CONTACT FORM ===== */
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+        }
+        .contact-info-box {
+            background: linear-gradient(135deg, #1a237e, #283593);
+            color: #fff;
+            padding: 40px;
+            border-radius: 16px;
+        }
+        .contact-info-box h3 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #f9a825;
+        }
+        .contact-info-box p { margin-bottom: 12px; display: flex; align-items: center; gap: 12px; }
+        .contact-info-box .info-icon { font-size: 1.3rem; }
+
+        .contact-form-box {
+            background: #fff;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.06);
+        }
+        .contact-form-box h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #1a237e;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #444;
+        }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e0dcd4;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            background: #fefaf0;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e65100;
+        }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+        .btn-submit {
+            background: linear-gradient(135deg, #e65100, #f9a825);
+            color: #fff;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+        }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(230,81,0,0.35);
+        }
+        .form-status {
+            margin-top: 16px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+        .form-status.success { display: block; background: #e8f5e9; color: #2e7d32; }
+        .form-status.error   { display: block; background: #fbe9e7; color: #c62828; }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #1a237e;
+            color: rgba(255,255,255,0.8);
+            text-align: center;
+            padding: 40px 24px;
+        }
+        footer .social-icons { margin-bottom: 16px; }
+        footer .social-icons a {
+            display: inline-block;
+            margin: 0 8px;
+            font-size: 1.8rem;
+            transition: transform 0.3s;
+        }
+        footer .social-icons a:hover { transform: scale(1.2); }
+        footer p { font-size: 0.9rem; }
+        footer .footer-brand {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #f9a825;
+            margin-bottom: 8px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .contact-wrapper { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .top-bar .container { flex-direction: column; text-align: center; }
+            .carousel-slide { padding: 0 16px; }
+            .carousel-btn { width: 36px; height: 36px; font-size: 1rem; }
+        }
+
+        /* ===== LOADING OVERLAY FOR FORM ===== */
+        .spinner {
+            display: inline-block;
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+<!-- ===== TOP BAR (dynamic) ===== -->
+<div class="top-bar" id="topBar">
+    <div class="container">
+        <span id="topBarPhone">📞 Loading...</span>
+        <span id="topBarEmail">✉️ Loading...</span>
+        <span id="topBarAddress">📍 Loading...</span>
+    </div>
+</div>
+
+<!-- ===== NAV ===== -->
+<nav>
+    <div class="container">
+        <div class="logo" id="logoDisplay">Build<span>Pro</span></div>
+        <div class="nav-links">
+            <a href="#services">Services</a>
+            <a href="#social-section">Portfolio</a>
+            <a href="#contact">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+    <h1 id="heroTitle">We Build <span>Your Vision</span></h1>
+    <p id="heroTagline">From foundation to finish — construction, websites, solar, flooring, wiring & interiors. One trusted partner.</p>
+    <a href="#contact" class="btn-outline">Get a Free Quote</a>
+</section>
+
+<!-- ===== ABOUT / WELCOME ===== -->
+<section>
+    <div class="container">
+        <div class="section-title">
+            <h2>Your All-in-One Building Partner</h2>
+            <p>We bring together every trade under one roof — no subcontractors, no hassles, just quality craftsmanship from start to finish.</p>
+            <div class="underline"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section id="services" style="background:#f5f0e8;">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Services</h2>
+            <p>Comprehensive solutions for residential and commercial projects</p>
+            <div class="underline"></div>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="icon">🏠</div>
+                <h3>House Building & Construction</h3>
+                <p>From foundation to roofing — custom homes, extensions, and structural builds with premium materials.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🌐</div>
+                <h3>Website Development</h3>
+                <p>Modern, responsive websites, e-commerce, and web apps tailored to grow your business online.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">☀️</div>
+                <h3>Solar & Inverter Installation</h3>
+                <p>Grid-tied and off-grid solar systems, battery backup, and inverter solutions for energy independence.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🔲</div>
+                <h3>Epoxy Flooring</h3>
+                <p>Durable, high-gloss epoxy and polyaspartic coatings for garages, warehouses, and showrooms.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">⚡</div>
+                <h3>Electrical Wiring</h3>
+                <p>Full electrical services — new wiring, rewiring, lighting, panels, and smart home integration.</p>
+            </div>
+            <div class="service-card">
+                <div class="icon">🛋️</div>
+                <h3>Interior Design & Decoration</h3>
+                <p>Space planning, finishes, furnishings, and decor that reflect your style and personality.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== TIKTOK CAROUSEL ===== -->
+<section id="social-section">
+    <div class="container">
+        <div class="section-title">
+            <h2>Our Work on TikTok</h2>
+            <p>Scroll through our latest projects and behind-the-scenes content</p>
+            <div class="underline"></div>
+        </div>
+        <div class="carousel-container" id="tiktokCarousel">
+            <div class="carousel-track" id="carouselTrack">
+                <!-- Slides injected via JS -->
+            </div>
+            <button class="carousel-btn prev" id="prevBtn">‹</button>
+            <button class="carousel-btn next" id="nextBtn">›</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+</section>
+
+<!-- ===== CONTACT ===== -->
+<section id="contact">
+    <div class="container">
+        <div class="section-title">
+            <h2>Get In Touch</h2>
+            <p>Tell us about your project and we'll get back to you within 24 hours</p>
+            <div class="underline"></div>
+        </div>
+        <div class="contact-wrapper">
+            <div class="contact-info-box">
+                <h3>Contact Information</h3>
+                <p><span class="info-icon">📍</span> <span id="displayAddress">Loading...</span></p>
+                <p><span class="info-icon">✉️</span> <span id="displayEmail">Loading...</span></p>
+                <p><span class="info-icon">📞</span> <span id="displayPhone">Loading...</span></p>
+                <p style="margin-top:20px;opacity:0.7;font-size:0.85rem;">
+                    Follow us on TikTok for project updates & inspiration
+                </p>
+            </div>
+            <div class="contact-form-box">
+                <h3>Send an Enquiry</h3>
+                <form id="contactForm">
+                    <div class="form-group">
+                        <label for="formName">Your Name</label>
+                        <input type="text" id="formName" name="name" placeholder="John Doe" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="formEmail">Email Address</label>
+                        <input type="email" id="formEmail" name="email" placeholder="john@example.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="formMessage">Enquiry / Message</label>
+                        <textarea id="formMessage" name="message" placeholder="Tell us about your project..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" id="submitBtn">
+                        Send Enquiry
+                    </button>
+                    <div class="form-status" id="formStatus"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+    <div class="container">
+        <div class="social-icons">
+            <a href="#" id="footerTiktokLink" target="_blank" rel="noopener" title="TikTok">🎵</a>
+        </div>
+        <div class="footer-brand" id="footerBrand">BuildPro</div>
+        <p id="footerAddress">Loading address...</p>
+        <p style="margin-top:8px;">&copy; <span id="footerYear"></span> BuildPro. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- ===== TIKTOK EMBED SCRIPT (loaded async) ===== -->
+<script async src="https://www.tiktok.com/embed.js"></script>
+
+<script>
+    (function() {
+        'use strict';
+
+        // ========== 1. BEEP ON LOAD ==========
+        function playBeep() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.frequency.value = 880;        // A5 — pleasant, not harsh
+                osc.type = 'sine';
+                gain.gain.setValueAtTime(0.25, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+                osc.start(ctx.currentTime);
+                osc.stop(ctx.currentTime + 0.15);
+            } catch(e) {
+                // Audio not available — silently ignore
+            }
+        }
+        // Play beep on first user interaction (autoplay policy), or immediately if allowed
+        document.addEventListener('DOMContentLoaded', () => {
+            // Try immediate — works on many browsers after user has interacted with the site before
+            playBeep();
+            // Fallback: retry on first click/touch anywhere
+            document.addEventListener('click', function beepFallback() {
+                playBeep();
+                document.removeEventListener('click', beepFallback);
+            }, { once: true });
+        });
+
+        // ========== 2. LOAD BUSINESS DATA ==========
+        function getSettings() {
+            try {
+                const raw = localStorage.getItem('buildpro_settings');
+                return raw ? JSON.parse(raw) : {};
+            } catch { return {}; }
+        }
+
+        const s = getSettings();
+
+        const businessName   = s.businessName   || 'BuildPro';
+        const businessTagline= s.businessTagline || 'Building & Design Experts';
+        const address        = s.address        || '123 Main Street, City, State 10001';
+        const email          = s.email          || 'info@buildpro.com';
+        const phone          = s.phone          || '+1 (555) 000-1234';
+        const formActionUrl  = s.formActionUrl  || 'https://formspree.io/f/your_form_id';
+        const tiktokUrls     = Array.isArray(s.tiktokUrls) ? s.tiktokUrls : [];
+        const tiktokSocial   = s.tiktokSocial   || '';
+
+        // ========== 3. POPULATE UI ==========
+        function setText(id, val) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = val;
+        }
+        function setAttr(id, attr, val) {
+            const el = document.getElementById(id);
+            if (el) el.setAttribute(attr, val);
+        }
+
+        // Top bar
+        setText('topBarPhone',   '📞 ' + phone);
+        setText('topBarEmail',   '✉️ ' + email);
+        setText('topBarAddress', '📍 ' + address);
+
+        // Logo & Hero
+        setText('logoDisplay', businessName);
+        setText('heroTitle', `We Build <span>Your Vision</span>`);
+        setText('heroTagline', businessTagline);
+
+        // Contact info
+        setText('displayAddress', address);
+        setText('displayEmail',   email);
+        setText('displayPhone',   phone);
+
+        // Footer
+        setText('footerBrand', businessName);
+        setText('footerAddress', address);
+        document.getElementById('footerYear').textContent = new Date().getFullYear();
+        if (tiktokSocial) {
+            setAttr('footerTiktokLink', 'href', tiktokSocial);
+        }
+
+        // ========== 4. FORM ACTION ==========
+        const formEl = document.getElementById('contactForm');
+        if (formEl) {
+            formEl.action = formActionUrl;
+            formEl.method = 'POST';
+
+            // If it's a Formspree-style endpoint, add the _replyto hidden input
+            if (formActionUrl.includes('formspree.io')) {
+                let replyInput = document.createElement('input');
+                replyInput.type = 'hidden';
+                replyInput.name = '_replyto';
+                replyInput.value = '';
+                // Set on email change
+                const emailInput = document.getElementById('formEmail');
+                if (emailInput) {
+                    emailInput.addEventListener('input', function() {
+                        replyInput.value = this.value;
+                    });
+                }
+                formEl.appendChild(replyInput);
+            }
+        }
+
+        // ========== 5. FORM SUBMIT HANDLER ==========
+        const submitBtn = document.getElementById('submitBtn');
+        const statusEl  = document.getElementById('formStatus');
+
+        formEl.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Basic validation
+            const nameVal    = document.getElementById('formName').value.trim();
+            const emailVal   = document.getElementById('formEmail').value.trim();
+            const msgVal     = document.getElementById('formMessage').value.trim();
+
+            if (!nameVal || !emailVal || !msgVal) {
+                statusEl.className = 'form-status error';
+                statusEl.textContent = 'Please fill in all fields.';
+                return;
+            }
+
+            // Show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
+            statusEl.className = 'form-status';
+            statusEl.textContent = '';
+
+            try {
+                const formData = new FormData(formEl);
+                const response = await fetch(formActionUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (response.ok) {
+                    statusEl.className = 'form-status success';
+                    statusEl.textContent = '✅ Enquiry sent successfully! We\'ll get back to you soon.';
+                    formEl.reset();
+                } else {
+                    const errText = await response.text();
+                    throw new Error(errText || 'Server responded with ' + response.status);
+                }
+            } catch (err) {
+                statusEl.className = 'form-status error';
+                statusEl.textContent = '❌ Failed to send. Please try again or email us directly at ' + email;
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Send Enquiry';
+            }
+        });
+
+        // ========== 6. TIKTOK CAROUSEL ==========
+        function buildCarousel(urls) {
+            const track = document.getElementById('carouselTrack');
+            const dots  = document.getElementById('carouselDots');
+            if (!track) return;
+
+            track.innerHTML = '';
+            dots.innerHTML  = '';
+
+            if (!urls.length) {
+                // Fallback demo slides
+                urls = [
+                    'https://www.tiktok.com/@tiktok/video/7101000000000000000',
+                    'https://www.tiktok.com/@tiktok/video/7102000000000000000',
+                    'https://www.tiktok.com/@tiktok/video/7103000000000000000'
+                ];
+            }
+
+            urls.forEach((url, idx) => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide';
+                // TikTok embed blockquote
+                slide.innerHTML = `<blockquote class="tiktok-embed" cite="${url}" data-video-id="${extractTikTokId(url)}" style="max-width:498px;min-width:325px;">
+                    <section><a target="_blank" href="${url}">View on TikTok</a></section>
+                </blockquote>`;
+                track.appendChild(slide);
+
+                // Dot
+                const dot = document.createElement('button');
+                dot.className = idx === 0 ? 'active' : '';
+                dot.setAttribute('data-index', idx);
+                dot.addEventListener('click', () => goToSlide(idx));
+                dots.appendChild(dot);
+            });
+
+            // Re-render TikTok embeds
+            if (window.tiktok && window.tiktok.reload) {
+                window.tiktok.reload();
+            } else {
+                // Reload embed script
+                const script = document.querySelector('script[src*="tiktok.com/embed.js"]');
+                if (script) {
+                    const newScript = document.createElement('script');
+                    newScript.src = 'https://www.tiktok.com/embed.js';
+                    newScript.async = true;
+                    document.body.appendChild(newScript);
+                }
+            }
+
+            return urls;
+        }
+
+        function extractTikTokId(url) {
+            const match = url.match(/video\/(\d+)/);
+            return match ? match[1] : '';
+        }
+
+        let currentSlide = 0;
+        let slideUrls = [];
+
+        function goToSlide(index) {
+            const track = document.getElementById('carouselTrack');
+            const allDots = document.querySelectorAll('#carouselDots button');
+            if (!track || !allDots.length) return;
+            const total = allDots.length;
+            if (index < 0) index = total - 1;
+            if (index >= total) index = 0;
+            currentSlide = index;
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            allDots.forEach((d, i) => d.className = i === currentSlide ? 'active' : '');
+        }
+
+        // Init carousel
+        slideUrls = buildCarousel(tiktokUrls);
+
+        document.getElementById('prevBtn').addEventListener('click', () => goToSlide(currentSlide - 1));
+        document.getElementById('nextBtn').addEventListener('click', () => goToSlide(currentSlide + 1));
+
+        // Auto-advance every 6 seconds
+        let autoAdvance = setInterval(() => goToSlide(currentSlide + 1), 6000);
+        const carouselContainer = document.getElementById('tiktokCarousel');
+        carouselContainer.addEventListener('mouseenter', () => clearInterval(autoAdvance));
+        carouselContainer.addEventListener('mouseleave', () => {
+            autoAdvance = setInterval(() => goToSlide(currentSlide + 1), 6000);
+        });
+
+        // Re-apply dots after TikTok embed re-renders
+        setTimeout(() => {
+            const allDots = document.querySelectorAll('#carouselDots button');
+            if (allDots.length) allDots[0].className = 'active';
+        }, 500);
+
+    })();
+</script>
+</body>
+</html>
