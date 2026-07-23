@@ -29,28 +29,36 @@
 
         /* ─── TOP BAR WITH CLOCKS ─── */
         .top-bar{
-            background:var(--navy);color:#ccc;padding:10px 0;font-size:.85rem
+            background:var(--navy);color:#ccc;padding:8px 0;font-size:.82rem
         }
         .top-bar .container{
             display:flex;justify-content:space-between;align-items:center;
-            flex-wrap:wrap;gap:8px
+            flex-wrap:wrap;gap:6px
         }
-        .top-bar-left{display:flex;gap:16px;flex-wrap:wrap}
-        .top-bar-left span{display:inline-flex;align-items:center;gap:6px}
+        .top-bar-left{display:flex;gap:14px;flex-wrap:wrap}
+        .top-bar-left span{display:inline-flex;align-items:center;gap:5px}
         .top-bar-right{
-            display:flex;gap:14px;align-items:center;flex-wrap:wrap
+            display:flex;gap:12px;align-items:center;flex-wrap:wrap
         }
         .clock-item{
-            display:flex;align-items:center;gap:4px;font-size:.78rem
+            display:flex;align-items:center;gap:5px;font-size:.75rem;
+            border-left:1px solid rgba(255,255,255,0.1);padding-left:10px
         }
+        .clock-item:first-child{border-left:none;padding-left:0}
         .clock-item .flag{font-size:.85rem;line-height:1}
-        .clock-item .tz-time{
-            font-weight:600;font-variant-numeric:tabular-nums;
-            color:#e8dcc8;min-width:58px
+        .clock-item .clock-info{display:flex;flex-direction:column;gap:0;line-height:1.2}
+        .clock-item .tz-name{
+            font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;
+            color:#9a8c78;font-weight:600
         }
-        .clock-item .tz-label{color:#9a8c78;font-size:.62rem;text-transform:uppercase;letter-spacing:.04em}
+        .clock-item .tz-time{
+            font-weight:700;font-variant-numeric:tabular-nums;
+            color:#f0eadc;font-size:.85rem
+        }
+        .clock-item .tz-date{
+            font-size:.58rem;color:#9a8c78
+        }
         .clock-item.hidden-clock{display:none!important}
-        /* ---- end clocks ---- */
 
         nav{
             background:rgba(255,248,240,0.97);
@@ -70,7 +78,6 @@
         .nav-links a{color:var(--charcoal,#1b1b1b);transition:color .3s}
         .nav-links a:hover{color:var(--orange)}
 
-        /* Hero */
         .hero{
             position:relative;min-height:90vh;
             display:flex;align-items:center;justify-content:center;
@@ -121,7 +128,6 @@
             margin:14px auto 0;border-radius:4px
         }
 
-        /* About */
         #about{background:linear-gradient(180deg,#fefae0,#f8f3e6)}
         .about-grid{
             display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center
@@ -149,7 +155,6 @@
         .stat-box .num{font-size:1.8rem;font-weight:800;color:var(--orange)}
         .stat-box .label{font-size:.8rem;color:#999;margin-top:4px}
 
-        /* Services */
         #services{background:#f0ede6}
         .services-grid{
             display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:28px
@@ -174,7 +179,6 @@
         }
         .service-card .card-body p{color:#666;font-size:.95rem}
 
-        /* Gallery */
         #gallery{background:linear-gradient(180deg,#f0ede6,#fefae0)}
         .carousel-wrap{
             position:relative;max-width:1000px;margin:0 auto;
@@ -214,7 +218,6 @@
         }
         .carousel-dots button.active{background:var(--navy)}
 
-        /* Contact */
         #contact{background:#fefae0}
         .contact-wrapper{
             display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start
@@ -296,6 +299,7 @@
             .nav-links{display:none}
             .top-bar .container{flex-direction:column;text-align:center}
             .top-bar-left,.top-bar-right{justify-content:center}
+            .clock-item{border-left:none;padding-left:0}
             .carousel-btn{width:36px;height:36px;font-size:1.2rem}
             .services-grid{grid-template-columns:1fr}
             .about-stats{grid-template-columns:repeat(3,1fr);gap:10px}
@@ -306,7 +310,7 @@
 </head>
 <body>
 
-<!-- ─── TOP BAR WITH CLOCKS ─── -->
+<!-- ─── TOP BAR WITH LIVE CLOCKS (TIME + DATE + SECONDS) ─── -->
 <div class="top-bar" id="topBar">
     <div class="container">
         <div class="top-bar-left">
@@ -315,21 +319,7 @@
             <span>📍 <span id="topAddress">23b Admiralty Way, Lekki Phase 1, Lagos</span></span>
         </div>
         <div class="top-bar-right" id="worldClocks">
-            <div class="clock-item" data-clock="nigeria">
-                <span class="flag">🇳🇬</span>
-                <span class="tz-label">Nigeria</span>
-                <span class="tz-time" id="time-nigeria">--:--</span>
-            </div>
-            <div class="clock-item" data-clock="useastern">
-                <span class="flag">🇺🇸</span>
-                <span class="tz-label">US Eastern</span>
-                <span class="tz-time" id="time-useastern">--:--</span>
-            </div>
-            <div class="clock-item" data-clock="toronto">
-                <span class="flag">🇨🇦</span>
-                <span class="tz-label">Toronto</span>
-                <span class="tz-time" id="time-toronto">--:--</span>
-            </div>
+            <!-- Clocks injected by JavaScript -->
         </div>
     </div>
 </div>
@@ -397,7 +387,6 @@
             <div class="bar"></div>
         </div>
         <div class="services-grid">
-            <!-- Card 1 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgConstruction" src="https://picsum.photos/seed/o2-construction/800/500" alt="Construction" loading="lazy" /></div>
                 <div class="card-body">
@@ -406,7 +395,6 @@
                     <p>Custom homes, extensions, and renovations — quality craftsmanship from foundation to roofing. We build structures that last.</p>
                 </div>
             </div>
-            <!-- Card 2 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWebsite" src="https://picsum.photos/seed/o2-website/800/500" alt="Website Development" loading="lazy" /></div>
                 <div class="card-body">
@@ -415,7 +403,6 @@
                     <p>Modern, responsive websites and e-commerce platforms tailored to grow your business. Clean code, stunning design, fast delivery.</p>
                 </div>
             </div>
-            <!-- Card 3 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgSolar" src="https://picsum.photos/seed/o2-solar/800/500" alt="Solar Installation" loading="lazy" /></div>
                 <div class="card-body">
@@ -424,7 +411,6 @@
                     <p>Grid-tied and off-grid solar systems, battery backup, and inverter solutions for true energy independence and lower bills.</p>
                 </div>
             </div>
-            <!-- Card 4 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgFlooring" src="https://picsum.photos/seed/o2-flooring/800/500" alt="Epoxy Flooring" loading="lazy" /></div>
                 <div class="card-body">
@@ -433,7 +419,6 @@
                     <p>Durable high-gloss epoxy, polyaspartic coatings, and decorative stamped concrete for garages, showrooms, and homes.</p>
                 </div>
             </div>
-            <!-- Card 5 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWiring" src="https://picsum.photos/seed/o2-wiring/800/500" alt="Electrical Wiring" loading="lazy" /></div>
                 <div class="card-body">
@@ -442,7 +427,6 @@
                     <p>Full electrical services — new wiring, rewiring, lighting design, panel upgrades, and complete smart home integration.</p>
                 </div>
             </div>
-            <!-- Card 6 -->
             <div class="service-card">
                 <div class="card-img"><img id="imgInterior" src="https://picsum.photos/seed/o2-interior/800/500" alt="Interior Design" loading="lazy" /></div>
                 <div class="card-body">
@@ -538,15 +522,14 @@
 (function() {
     'use strict';
 
-    // ================================================================
-    //  1. DEFAULTS — displayed immediately, no loading state
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       DEFAULTS — everything hardcoded, works immediately
+       ═══════════════════════════════════════════════ */
     var DEFAULTS = {
-        businessName:     'O² Elliotosa Enterprises',
-        businessTagline:  'Construction · Websites · Solar & Inverters · Epoxy Flooring · Wiring · Interiors',
-        address:          '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
-        email:            'info@o2elliotosa.com',
         phone:            '+234 803 456 7890',
+        email:            'info@o2elliotosa.com',
+        address:          '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
+        businessTagline:  'Construction · Websites · Solar & Inverters · Epoxy Flooring · Wiring · Interiors',
         formActionUrl:    '',
         imgConstruction:  'https://picsum.photos/seed/o2-construction/800/500',
         imgWebsite:       'https://picsum.photos/seed/o2-website/800/500',
@@ -562,13 +545,17 @@
             {url:'https://picsum.photos/seed/o2-gallery5/1200/675', caption:'Electrical Wiring & Installation'},
             {url:'https://picsum.photos/seed/o2-gallery6/1200/675', caption:'Interior Design & Decoration'}
         ],
-        clockVisibility: { nigeria: true, useastern: true, toronto: true }
+        timezones: [
+            { id:'nigeria',   flag:'🇳🇬', name:'Nigeria',   zone:'Africa/Lagos' },
+            { id:'useastern', flag:'🇺🇸', name:'US Eastern', zone:'America/New_York' },
+            { id:'toronto',   flag:'🇨🇦', name:'Toronto',    zone:'America/Toronto' }
+        ]
     };
 
-    // ================================================================
-    //  2. FIREBASE CONFIG — replace with your own project
-    // ================================================================
-    var firebaseConfig = {
+    /* ═══════════════════════════════════════════════
+       FIREBASE CONFIG — replace with your own project
+       ═══════════════════════════════════════════════ */
+    var FIREBASE_CONFIG = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_PROJECT.firebaseapp.com",
         databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
@@ -578,48 +565,58 @@
         appId: "YOUR_APP_ID"
     };
 
-    // ================================================================
-    //  3. DOM HELPERS
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       DOM HELPERS
+       ═══════════════════════════════════════════════ */
     var $ = function(id) { return document.getElementById(id); };
     var currentData = JSON.parse(JSON.stringify(DEFAULTS));
 
-    // ================================================================
-    //  4. CLOCK SYSTEM — runs every 10 seconds
-    // ================================================================
-    var TZ_MAP = {
-        nigeria:   { timezone: 'Africa/Lagos',      label: 'WAT' },
-        useastern: { timezone: 'America/New_York',   label: 'ET'  },
-        toronto:   { timezone: 'America/Toronto',    label: 'ET'  }
-    };
+    /* ═══════════════════════════════════════════════
+       LIVE CLOCKS WITH DATE + SECONDS (updates every second)
+       ═══════════════════════════════════════════════ */
+    var clocksContainer = $('worldClocks');
+
+    function renderClocks(timezones) {
+        if (!clocksContainer) return;
+        var tzs = (timezones && timezones.length > 0) ? timezones : DEFAULTS.timezones;
+        var html = '';
+        tzs.forEach(function(tz) {
+            html += '<div class="clock-item" data-clock="' + tz.id + '">'
+                  + '<span class="flag">' + tz.flag + '</span>'
+                  + '<div class="clock-info">'
+                  + '<span class="tz-name">' + tz.name + '</span>'
+                  + '<span class="tz-time" id="clk-' + tz.id + '-time">--:--:--</span>'
+                  + '<span class="tz-date" id="clk-' + tz.id + '-date"></span>'
+                  + '</div></div>';
+        });
+        clocksContainer.innerHTML = html;
+    }
 
     function updateClocks() {
         var now = new Date();
-        for (var key in TZ_MAP) {
-            var el = document.getElementById('time-' + key);
-            if (!el) continue;
-            el.textContent = now.toLocaleTimeString('en-US', {
-                timeZone: TZ_MAP[key].timezone,
-                hour: '2-digit', minute: '2-digit', hour12: true
-            });
-        }
-    }
-
-    function applyClockVisibility(vis) {
-        vis = vis || currentData.clockVisibility || DEFAULTS.clockVisibility;
-        var items = document.querySelectorAll('[data-clock]');
-        items.forEach(function(item) {
-            var key = item.getAttribute('data-clock');
-            item.classList.toggle('hidden-clock', vis[key] === false);
+        var tzs = currentData.timezones || DEFAULTS.timezones;
+        tzs.forEach(function(tz) {
+            var timeEl = $('clk-' + tz.id + '-time');
+            var dateEl = $('clk-' + tz.id + '-date');
+            if (timeEl) {
+                timeEl.textContent = now.toLocaleTimeString('en-US', {
+                    timeZone: tz.zone,
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: true
+                });
+            }
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('en-US', {
+                    timeZone: tz.zone,
+                    weekday: 'short', month: 'short', day: 'numeric'
+                });
+            }
         });
     }
 
-    updateClocks();
-    setInterval(updateClocks, 10000);
-
-    // ================================================================
-    //  5. APPLY DATA TO PAGE
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       APPLY DATA TO PAGE
+       ═══════════════════════════════════════════════ */
     function applyData(d) {
         $('topPhone').textContent        = d.phone || DEFAULTS.phone;
         $('topEmail').textContent        = d.email || DEFAULTS.email;
@@ -633,7 +630,6 @@
         $('footerContactLine').textContent = '\u{1F4DE} ' + (d.phone || DEFAULTS.phone) + '  \u{00B7}  \u{2709}\u{FE0F} ' + (d.email || DEFAULTS.email);
         $('footerYear').textContent      = new Date().getFullYear();
 
-        // Service images
         if (d.imgConstruction) $('imgConstruction').src = d.imgConstruction;
         if (d.imgWebsite)      $('imgWebsite').src      = d.imgWebsite;
         if (d.imgSolar)        $('imgSolar').src        = d.imgSolar;
@@ -641,24 +637,22 @@
         if (d.imgWiring)       $('imgWiring').src       = d.imgWiring;
         if (d.imgInterior)     $('imgInterior').src     = d.imgInterior;
 
-        // Form action
         var form = $('contactForm');
         if (form && d.formActionUrl) form.action = d.formActionUrl;
 
-        // Gallery
         buildCarousel(d.galleryImages || []);
 
-        // Clock visibility
-        applyClockVisibility(d.clockVisibility);
+        // Render clocks
+        renderClocks(d.timezones);
+        updateClocks();
     }
 
-    // ================================================================
-    //  6. GALLERY CAROUSEL
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       GALLERY CAROUSEL
+       ═══════════════════════════════════════════════ */
     function buildCarousel(images) {
         var container = $('carouselContainer');
         if (!container) return;
-
         var items = (images && images.length > 0) ? images : DEFAULTS.galleryImages;
 
         var html = '<div class="carousel-wrap"><div class="carousel-track" id="galleryTrack">';
@@ -709,12 +703,15 @@
         if (next) next.addEventListener('click', function() { goTo(current + 1); });
     }
 
-    // Apply defaults immediately — NO loading state
+    // Apply defaults immediately
     applyData(DEFAULTS);
 
-    // ================================================================
-    //  7. BEEP — sweet chime on first user interaction (no badge)
-    // ================================================================
+    // Clock tick every second
+    setInterval(updateClocks, 1000);
+
+    /* ═══════════════════════════════════════════════
+       BEEP — sweet chime on first user interaction
+       ═══════════════════════════════════════════════ */
     var audioCtx = null;
     var beepPlayed = false;
 
@@ -728,12 +725,8 @@
         beepPlayed = true;
         try {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-
             var t = audioCtx.currentTime;
-
-            // Two-tone chime: C5 (523) → E5 (659) — warm and sweet
-            var notes = [523.25, 659.25];
-            notes.forEach(function(freq, i) {
+            [523.25, 659.25].forEach(function(freq, i) {
                 var osc = audioCtx.createOscillator();
                 var gain = audioCtx.createGain();
                 osc.type = 'sine';
@@ -747,8 +740,6 @@
                 osc.start(start);
                 osc.stop(start + 0.6);
             });
-
-            // Soft octave harmonic for richness
             var osc2 = audioCtx.createOscillator();
             var gain2 = audioCtx.createGain();
             osc2.type = 'sine';
@@ -763,7 +754,6 @@
         } catch(e) {}
     }
 
-    // Fire on first user gesture (touch, scroll, click, keydown)
     var gestureEvents = ['touchstart', 'scroll', 'mousedown', 'keydown'];
     function onGesture(e) {
         initAudio();
@@ -776,34 +766,28 @@
         document.addEventListener(ev, onGesture, { passive: true, capture: true });
     });
 
-    // ================================================================
-    //  8. FIREBASE — overlay on defaults if available
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       FIREBASE
+       ═══════════════════════════════════════════════ */
     var db = null;
     try {
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(FIREBASE_CONFIG);
         db = firebase.database();
-    } catch(e) {
-        console.log('Firebase not configured. Using defaults.');
-    }
+    } catch(e) { console.log('Firebase not configured. Using defaults.'); }
 
     if (db) {
         db.ref('settings').on('value', function(snapshot) {
             var fbData = snapshot.val() || {};
             for (var key in fbData) {
-                if (fbData.hasOwnProperty(key)) {
-                    currentData[key] = fbData[key];
-                }
+                if (fbData.hasOwnProperty(key)) currentData[key] = fbData[key];
             }
             applyData(currentData);
-        }, function(err) {
-            console.warn('Firebase read failed. Defaults remain active.');
-        });
+        }, function() { /* defaults remain */ });
     }
 
-    // ================================================================
-    //  9. FORM HANDLER
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       FORM HANDLER
+       ═══════════════════════════════════════════════ */
     var formEl = $('contactForm');
     var submitBtn = $('submitBtn');
     var statusEl = $('formStatus');
@@ -811,43 +795,35 @@
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
             e.preventDefault();
-
             var name  = $('formName').value.trim();
             var email = $('formEmail').value.trim();
             var msg   = $('formMessage').value.trim();
-
             if (!name || !email || !msg) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '⚠️ Please fill in your name, email, and message.';
                 return;
             }
-
             var actionUrl = this.action;
             if (!actionUrl || !actionUrl.startsWith('http')) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '⚠️ Form endpoint not configured. Contact the site admin.';
                 return;
             }
-
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
             statusEl.className = 'form-status sending';
             statusEl.textContent = '⏳ Sending your enquiry...';
-
             try {
                 var formData = new FormData(this);
                 var response = await fetch(actionUrl, {
-                    method: 'POST',
-                    body: formData,
+                    method: 'POST', body: formData,
                     headers: { 'Accept': 'application/json' }
                 });
                 if (response.ok) {
                     statusEl.className = 'form-status success';
                     statusEl.textContent = '✅ Enquiry sent! We\'ll get back to you within 24 hours.';
                     this.reset();
-                } else {
-                    throw new Error('Server responded with ' + response.status);
-                }
+                } else { throw new Error('Server responded with ' + response.status); }
             } catch(err) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '❌ Failed to send. Please email us or try again.';
