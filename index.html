@@ -27,14 +27,38 @@
             --teal:#00897b;--cream:#fefae0;--warm:#fff8f0
         }
 
+        /* ─── TOP BAR WITH CLOCKS ─── */
         .top-bar{
-            background:var(--navy);color:#ccc;padding:10px 0;font-size:.85rem
+            background:var(--navy);color:#ccc;padding:8px 0;font-size:.82rem
         }
         .top-bar .container{
             display:flex;justify-content:space-between;align-items:center;
-            flex-wrap:wrap;gap:8px
+            flex-wrap:wrap;gap:6px
         }
-        .top-bar span{display:inline-flex;align-items:center;gap:6px}
+        .top-bar-left{display:flex;gap:14px;flex-wrap:wrap}
+        .top-bar-left span{display:inline-flex;align-items:center;gap:5px}
+        .top-bar-right{
+            display:flex;gap:12px;align-items:center;flex-wrap:wrap
+        }
+        .clock-item{
+            display:flex;align-items:center;gap:5px;font-size:.75rem;
+            border-left:1px solid rgba(255,255,255,0.1);padding-left:10px
+        }
+        .clock-item:first-child{border-left:none;padding-left:0}
+        .clock-item .flag{font-size:.85rem;line-height:1}
+        .clock-item .clock-info{display:flex;flex-direction:column;gap:0;line-height:1.2}
+        .clock-item .tz-name{
+            font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;
+            color:#9a8c78;font-weight:600
+        }
+        .clock-item .tz-time{
+            font-weight:700;font-variant-numeric:tabular-nums;
+            color:#f0eadc;font-size:.85rem
+        }
+        .clock-item .tz-date{
+            font-size:.58rem;color:#9a8c78
+        }
+        .clock-item.hidden-clock{display:none!important}
 
         nav{
             background:rgba(255,248,240,0.97);
@@ -54,7 +78,6 @@
         .nav-links a{color:var(--charcoal,#1b1b1b);transition:color .3s}
         .nav-links a:hover{color:var(--orange)}
 
-        /* Hero */
         .hero{
             position:relative;min-height:90vh;
             display:flex;align-items:center;justify-content:center;
@@ -93,22 +116,6 @@
             box-shadow:0 12px 35px rgba(212,163,115,0.45)
         }
 
-        /* Beep badge */
-        .beep-badge{
-            position:fixed;bottom:24px;right:24px;
-            background:rgba(13,27,42,0.85);backdrop-filter:blur(8px);
-            color:var(--gold);padding:10px 20px;border-radius:30px;
-            font-size:.85rem;font-weight:600;z-index:999;
-            cursor:pointer;transition:all .3s;
-            box-shadow:0 4px 20px rgba(0,0,0,0.15);
-            border:1px solid rgba(212,163,115,0.2);
-            animation:beepPulse 2s ease-in-out infinite
-        }
-        @keyframes beepPulse{0%,100%{opacity:.85}50%{opacity:1}}
-        .beep-badge:hover{background:var(--navy);transform:scale(1.05)}
-        .beep-badge.played{opacity:.4;cursor:default;animation:none}
-        .beep-badge.played:hover{transform:none}
-
         .section-title{text-align:center;margin-bottom:50px}
         .section-title h2{
             font-size:2.2rem;font-weight:800;color:var(--navy);margin-bottom:10px
@@ -121,7 +128,6 @@
             margin:14px auto 0;border-radius:4px
         }
 
-        /* About */
         #about{background:linear-gradient(180deg,#fefae0,#f8f3e6)}
         .about-grid{
             display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center
@@ -149,7 +155,6 @@
         .stat-box .num{font-size:1.8rem;font-weight:800;color:var(--orange)}
         .stat-box .label{font-size:.8rem;color:#999;margin-top:4px}
 
-        /* Services */
         #services{background:#f0ede6}
         .services-grid{
             display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:28px
@@ -174,7 +179,6 @@
         }
         .service-card .card-body p{color:#666;font-size:.95rem}
 
-        /* Gallery */
         #gallery{background:linear-gradient(180deg,#f0ede6,#fefae0)}
         .carousel-wrap{
             position:relative;max-width:1000px;margin:0 auto;
@@ -214,7 +218,6 @@
         }
         .carousel-dots button.active{background:var(--navy)}
 
-        /* Contact */
         #contact{background:#fefae0}
         .contact-wrapper{
             display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:start
@@ -295,6 +298,8 @@
             .contact-wrapper{grid-template-columns:1fr}
             .nav-links{display:none}
             .top-bar .container{flex-direction:column;text-align:center}
+            .top-bar-left,.top-bar-right{justify-content:center}
+            .clock-item{border-left:none;padding-left:0}
             .carousel-btn{width:36px;height:36px;font-size:1.2rem}
             .services-grid{grid-template-columns:1fr}
             .about-stats{grid-template-columns:repeat(3,1fr);gap:10px}
@@ -305,15 +310,17 @@
 </head>
 <body>
 
-<!-- Beep badge -->
-<div class="beep-badge" id="beepBadge">🔊 Tap to hear welcome tone</div>
-
-<!-- Top bar -->
+<!-- ─── TOP BAR WITH LIVE CLOCKS (TIME + DATE + SECONDS) ─── -->
 <div class="top-bar" id="topBar">
     <div class="container">
-        <span>📞 <span id="topPhone">23b Admiralty Way, Lekki Phase 1, Lagos</span></span>
-        <span>✉️ <span id="topEmail">info@o2elliotosa.com</span></span>
-        <span>📍 <span id="topAddress">+234 803 456 7890</span></span>
+        <div class="top-bar-left">
+            <span>📞 <span id="topPhone">+234 803 456 7890</span></span>
+            <span>✉️ <span id="topEmail">info@o2elliotosa.com</span></span>
+            <span>📍 <span id="topAddress">23b Admiralty Way, Lekki Phase 1, Lagos</span></span>
+        </div>
+        <div class="top-bar-right" id="worldClocks">
+            <!-- Clocks injected by JavaScript -->
+        </div>
     </div>
 </div>
 
@@ -380,7 +387,6 @@
             <div class="bar"></div>
         </div>
         <div class="services-grid">
-            <!-- Card 1 - Construction -->
             <div class="service-card">
                 <div class="card-img"><img id="imgConstruction" src="https://picsum.photos/seed/o2-construction/800/500" alt="Construction" loading="lazy" /></div>
                 <div class="card-body">
@@ -389,7 +395,6 @@
                     <p>Custom homes, extensions, and renovations — quality craftsmanship from foundation to roofing. We build structures that last.</p>
                 </div>
             </div>
-            <!-- Card 2 - Website -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWebsite" src="https://picsum.photos/seed/o2-website/800/500" alt="Website Development" loading="lazy" /></div>
                 <div class="card-body">
@@ -398,7 +403,6 @@
                     <p>Modern, responsive websites and e-commerce platforms tailored to grow your business. Clean code, stunning design, fast delivery.</p>
                 </div>
             </div>
-            <!-- Card 3 - Solar -->
             <div class="service-card">
                 <div class="card-img"><img id="imgSolar" src="https://picsum.photos/seed/o2-solar/800/500" alt="Solar Installation" loading="lazy" /></div>
                 <div class="card-body">
@@ -407,7 +411,6 @@
                     <p>Grid-tied and off-grid solar systems, battery backup, and inverter solutions for true energy independence and lower bills.</p>
                 </div>
             </div>
-            <!-- Card 4 - Flooring -->
             <div class="service-card">
                 <div class="card-img"><img id="imgFlooring" src="https://picsum.photos/seed/o2-flooring/800/500" alt="Epoxy Flooring" loading="lazy" /></div>
                 <div class="card-body">
@@ -416,7 +419,6 @@
                     <p>Durable high-gloss epoxy, polyaspartic coatings, and decorative stamped concrete for garages, showrooms, and homes.</p>
                 </div>
             </div>
-            <!-- Card 5 - Wiring -->
             <div class="service-card">
                 <div class="card-img"><img id="imgWiring" src="https://picsum.photos/seed/o2-wiring/800/500" alt="Electrical Wiring" loading="lazy" /></div>
                 <div class="card-body">
@@ -425,7 +427,6 @@
                     <p>Full electrical services — new wiring, rewiring, lighting design, panel upgrades, and complete smart home integration.</p>
                 </div>
             </div>
-            <!-- Card 6 - Interior -->
             <div class="service-card">
                 <div class="card-img"><img id="imgInterior" src="https://picsum.photos/seed/o2-interior/800/500" alt="Interior Design" loading="lazy" /></div>
                 <div class="card-body">
@@ -447,7 +448,7 @@
             <div class="bar"></div>
         </div>
         <div id="carouselContainer">
-            <!-- Built by JavaScript immediately — no loading state -->
+            <!-- Built by JavaScript -->
         </div>
     </div>
 </section>
@@ -521,15 +522,14 @@
 (function() {
     'use strict';
 
-    // ================================================================
-    //  1. DEFAULTS — displayed IMMEDIATELY, no loading state ever
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       DEFAULTS — everything hardcoded, works immediately
+       ═══════════════════════════════════════════════ */
     var DEFAULTS = {
-        businessName:     'O² Elliotosa Enterprises',
-        businessTagline:  'Construction · Websites · Solar & Inverters · Epoxy Flooring · Wiring · Interiors',
-        address:          '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
-        email:            'info@o2elliotosa.com',
         phone:            '+234 803 456 7890',
+        email:            'info@o2elliotosa.com',
+        address:          '23b Admiralty Way, Lekki Phase 1, Lagos, Nigeria',
+        businessTagline:  'Construction · Websites · Solar & Inverters · Epoxy Flooring · Wiring · Interiors',
         formActionUrl:    '',
         imgConstruction:  'https://picsum.photos/seed/o2-construction/800/500',
         imgWebsite:       'https://picsum.photos/seed/o2-website/800/500',
@@ -544,13 +544,18 @@
             {url:'https://picsum.photos/seed/o2-gallery4/1200/675', caption:'Epoxy & Stamping Flooring'},
             {url:'https://picsum.photos/seed/o2-gallery5/1200/675', caption:'Electrical Wiring & Installation'},
             {url:'https://picsum.photos/seed/o2-gallery6/1200/675', caption:'Interior Design & Decoration'}
+        ],
+        timezones: [
+            { id:'nigeria',   flag:'🇳🇬', name:'Nigeria',   zone:'Africa/Lagos' },
+            { id:'useastern', flag:'🇺🇸', name:'US Eastern', zone:'America/New_York' },
+            { id:'toronto',   flag:'🇨🇦', name:'Toronto',    zone:'America/Toronto' }
         ]
     };
 
-    // ================================================================
-    //  2. FIREBASE CONFIG — replace with your own
-    // ================================================================
-    var firebaseConfig = {
+    /* ═══════════════════════════════════════════════
+       FIREBASE CONFIG — replace with your own project
+       ═══════════════════════════════════════════════ */
+    var FIREBASE_CONFIG = {
         apiKey: "YOUR_API_KEY",
         authDomain: "YOUR_PROJECT.firebaseapp.com",
         databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
@@ -560,27 +565,71 @@
         appId: "YOUR_APP_ID"
     };
 
-    // ================================================================
-    //  3. INIT — apply defaults FIRST, then overlay Firebase if available
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       DOM HELPERS
+       ═══════════════════════════════════════════════ */
     var $ = function(id) { return document.getElementById(id); };
     var currentData = JSON.parse(JSON.stringify(DEFAULTS));
 
-    // Apply data to the page
-    function applyData(d) {
-        $('topPhone').textContent       = d.phone;
-        $('topEmail').textContent       = d.email;
-        $('topAddress').textContent     = d.address;
-        $('heroTagline').textContent    = d.businessTagline;
-        $('ciAddress').textContent      = d.address;
-        $('ciEmail').textContent        = d.email;
-        $('ciPhone').textContent        = d.phone;
-        $('footerTagline').textContent  = d.businessTagline || 'Building & Digital Solutions';
-        $('footerAddress').textContent  = d.address;
-        $('footerContactLine').textContent = '\u{1F4DE} ' + d.phone + '  \u{00B7}  \u{2709}\u{FE0F} ' + d.email;
-        $('footerYear').textContent     = new Date().getFullYear();
+    /* ═══════════════════════════════════════════════
+       LIVE CLOCKS WITH DATE + SECONDS (updates every second)
+       ═══════════════════════════════════════════════ */
+    var clocksContainer = $('worldClocks');
 
-        // Service images
+    function renderClocks(timezones) {
+        if (!clocksContainer) return;
+        var tzs = (timezones && timezones.length > 0) ? timezones : DEFAULTS.timezones;
+        var html = '';
+        tzs.forEach(function(tz) {
+            html += '<div class="clock-item" data-clock="' + tz.id + '">'
+                  + '<span class="flag">' + tz.flag + '</span>'
+                  + '<div class="clock-info">'
+                  + '<span class="tz-name">' + tz.name + '</span>'
+                  + '<span class="tz-time" id="clk-' + tz.id + '-time">--:--:--</span>'
+                  + '<span class="tz-date" id="clk-' + tz.id + '-date"></span>'
+                  + '</div></div>';
+        });
+        clocksContainer.innerHTML = html;
+    }
+
+    function updateClocks() {
+        var now = new Date();
+        var tzs = currentData.timezones || DEFAULTS.timezones;
+        tzs.forEach(function(tz) {
+            var timeEl = $('clk-' + tz.id + '-time');
+            var dateEl = $('clk-' + tz.id + '-date');
+            if (timeEl) {
+                timeEl.textContent = now.toLocaleTimeString('en-US', {
+                    timeZone: tz.zone,
+                    hour: '2-digit', minute: '2-digit', second: '2-digit',
+                    hour12: true
+                });
+            }
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('en-US', {
+                    timeZone: tz.zone,
+                    weekday: 'short', month: 'short', day: 'numeric'
+                });
+            }
+        });
+    }
+
+    /* ═══════════════════════════════════════════════
+       APPLY DATA TO PAGE
+       ═══════════════════════════════════════════════ */
+    function applyData(d) {
+        $('topPhone').textContent        = d.phone || DEFAULTS.phone;
+        $('topEmail').textContent        = d.email || DEFAULTS.email;
+        $('topAddress').textContent      = d.address || DEFAULTS.address;
+        $('heroTagline').textContent     = d.businessTagline || DEFAULTS.businessTagline;
+        $('ciAddress').textContent       = d.address || DEFAULTS.address;
+        $('ciEmail').textContent         = d.email || DEFAULTS.email;
+        $('ciPhone').textContent         = d.phone || DEFAULTS.phone;
+        $('footerTagline').textContent   = d.businessTagline || 'Building & Digital Solutions';
+        $('footerAddress').textContent   = d.address || DEFAULTS.address;
+        $('footerContactLine').textContent = '\u{1F4DE} ' + (d.phone || DEFAULTS.phone) + '  \u{00B7}  \u{2709}\u{FE0F} ' + (d.email || DEFAULTS.email);
+        $('footerYear').textContent      = new Date().getFullYear();
+
         if (d.imgConstruction) $('imgConstruction').src = d.imgConstruction;
         if (d.imgWebsite)      $('imgWebsite').src      = d.imgWebsite;
         if (d.imgSolar)        $('imgSolar').src        = d.imgSolar;
@@ -588,19 +637,22 @@
         if (d.imgWiring)       $('imgWiring').src       = d.imgWiring;
         if (d.imgInterior)     $('imgInterior').src     = d.imgInterior;
 
-        // Form action
         var form = $('contactForm');
         if (form && d.formActionUrl) form.action = d.formActionUrl;
 
-        // Gallery
         buildCarousel(d.galleryImages || []);
+
+        // Render clocks
+        renderClocks(d.timezones);
+        updateClocks();
     }
 
-    // Gallery carousel builder
+    /* ═══════════════════════════════════════════════
+       GALLERY CAROUSEL
+       ═══════════════════════════════════════════════ */
     function buildCarousel(images) {
         var container = $('carouselContainer');
         if (!container) return;
-
         var items = (images && images.length > 0) ? images : DEFAULTS.galleryImages;
 
         var html = '<div class="carousel-wrap"><div class="carousel-track" id="galleryTrack">';
@@ -649,122 +701,93 @@
 
         if (prev) prev.addEventListener('click', function() { goTo(current - 1); });
         if (next) next.addEventListener('click', function() { goTo(current + 1); });
-
-        var autoTimer = setInterval(function() { goTo(current + 1); }, 5000);
-        var wrap = container.querySelector('.carousel-wrap');
-        if (wrap) {
-            wrap.addEventListener('mouseenter', function() { clearInterval(autoTimer); });
-            wrap.addEventListener('mouseleave', function() {
-                autoTimer = setInterval(function() { goTo(current + 1); }, 5000);
-            });
-        }
     }
 
-    // Apply defaults immediately — NO loading state
+    // Apply defaults immediately
     applyData(DEFAULTS);
 
-    // ================================================================
-    //  4. BEEP SOUND — on first user interaction only
-    // ================================================================
+    // Clock tick every second
+    setInterval(updateClocks, 1000);
+
+    /* ═══════════════════════════════════════════════
+       BEEP — sweet chime on first user interaction
+       ═══════════════════════════════════════════════ */
     var audioCtx = null;
     var beepPlayed = false;
-    var beepBadge = $('beepBadge');
 
     function initAudio() {
         if (audioCtx) return;
-        try {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        } catch(e) {}
+        try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
     }
 
     function playBeep() {
         if (beepPlayed || !audioCtx) return;
+        beepPlayed = true;
         try {
             if (audioCtx.state === 'suspended') audioCtx.resume();
-            var osc = audioCtx.createOscillator();
-            var gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            osc.frequency.value = 415.30;
-            osc.type = 'sine';
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + 0.12);
-            gain.gain.linearRampToValueAtTime(0.16, audioCtx.currentTime + 1.8);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 2.0);
-            osc.start(audioCtx.currentTime);
-            osc.stop(audioCtx.currentTime + 2.0);
-            beepPlayed = true;
-            if (beepBadge) {
-                beepBadge.textContent = '🔊 Welcome tone played ✓';
-                beepBadge.classList.add('played');
-            }
+            var t = audioCtx.currentTime;
+            [523.25, 659.25].forEach(function(freq, i) {
+                var osc = audioCtx.createOscillator();
+                var gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                var start = t + i * 0.14;
+                gain.gain.setValueAtTime(0.001, start);
+                gain.gain.linearRampToValueAtTime(0.16, start + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.001, start + 0.55);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(start);
+                osc.stop(start + 0.6);
+            });
+            var osc2 = audioCtx.createOscillator();
+            var gain2 = audioCtx.createGain();
+            osc2.type = 'sine';
+            osc2.frequency.value = 1046.5;
+            gain2.gain.setValueAtTime(0.001, t + 0.05);
+            gain2.gain.linearRampToValueAtTime(0.045, t + 0.09);
+            gain2.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+            osc2.connect(gain2);
+            gain2.connect(audioCtx.destination);
+            osc2.start(t + 0.05);
+            osc2.stop(t + 0.6);
         } catch(e) {}
     }
 
-    function onFirstInteraction(e) {
+    var gestureEvents = ['touchstart', 'scroll', 'mousedown', 'keydown'];
+    function onGesture(e) {
         initAudio();
-        // Short delay to ensure AudioContext is ready
-        setTimeout(playBeep, 100);
-        // Remove badge click listener after first use
-        if (beepBadge) beepBadge.removeEventListener('click', onFirstInteraction);
+        setTimeout(playBeep, 80);
+        gestureEvents.forEach(function(ev) {
+            document.removeEventListener(ev, onGesture, { capture: true });
+        });
     }
+    gestureEvents.forEach(function(ev) {
+        document.addEventListener(ev, onGesture, { passive: true, capture: true });
+    });
 
-    // Set up the badge click
-    if (beepBadge) {
-        beepBadge.addEventListener('click', onFirstInteraction);
-    }
-
-    // Also listen for ANY user interaction as fallback
-    document.addEventListener('click', function(e) {
-        // Don't double-fire from badge click
-        if (e.target && e.target.closest && e.target.closest('#beepBadge')) return;
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
-    document.addEventListener('touchstart', function() {
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
-    document.addEventListener('keydown', function() {
-        if (!beepPlayed) {
-            initAudio();
-            setTimeout(playBeep, 100);
-        }
-    }, { once: true });
-
-    // ================================================================
-    //  5. FIREBASE — overlay on defaults if available
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       FIREBASE
+       ═══════════════════════════════════════════════ */
     var db = null;
     try {
-        firebase.initializeApp(firebaseConfig);
+        firebase.initializeApp(FIREBASE_CONFIG);
         db = firebase.database();
-    } catch(e) {
-        console.log('Firebase not configured. Using default data.');
-    }
+    } catch(e) { console.log('Firebase not configured. Using defaults.'); }
 
     if (db) {
         db.ref('settings').on('value', function(snapshot) {
             var fbData = snapshot.val() || {};
-            // Merge FB data over defaults (only overwrite what FB provides)
             for (var key in fbData) {
-                if (fbData.hasOwnProperty(key)) {
-                    currentData[key] = fbData[key];
-                }
+                if (fbData.hasOwnProperty(key)) currentData[key] = fbData[key];
             }
             applyData(currentData);
-        }, function(err) {
-            console.warn('Firebase read failed. Defaults remain active.');
-        });
+        }, function() { /* defaults remain */ });
     }
 
-    // ================================================================
-    //  6. FORM HANDLER
-    // ================================================================
+    /* ═══════════════════════════════════════════════
+       FORM HANDLER
+       ═══════════════════════════════════════════════ */
     var formEl = $('contactForm');
     var submitBtn = $('submitBtn');
     var statusEl = $('formStatus');
@@ -772,43 +795,35 @@
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
             e.preventDefault();
-
             var name  = $('formName').value.trim();
             var email = $('formEmail').value.trim();
             var msg   = $('formMessage').value.trim();
-
             if (!name || !email || !msg) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '⚠️ Please fill in your name, email, and message.';
                 return;
             }
-
             var actionUrl = this.action;
             if (!actionUrl || !actionUrl.startsWith('http')) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '⚠️ Form endpoint not configured. Contact the site admin.';
                 return;
             }
-
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="spinner"></span> Sending...';
             statusEl.className = 'form-status sending';
             statusEl.textContent = '⏳ Sending your enquiry...';
-
             try {
                 var formData = new FormData(this);
                 var response = await fetch(actionUrl, {
-                    method: 'POST',
-                    body: formData,
+                    method: 'POST', body: formData,
                     headers: { 'Accept': 'application/json' }
                 });
                 if (response.ok) {
                     statusEl.className = 'form-status success';
                     statusEl.textContent = '✅ Enquiry sent! We\'ll get back to you within 24 hours.';
                     this.reset();
-                } else {
-                    throw new Error('Server responded with ' + response.status);
-                }
+                } else { throw new Error('Server responded with ' + response.status); }
             } catch(err) {
                 statusEl.className = 'form-status error';
                 statusEl.textContent = '❌ Failed to send. Please email us or try again.';
@@ -819,7 +834,7 @@
         });
     }
 
-    console.log('O² Elliotosa loaded. Tap the beep badge 🔊 for sound.');
+    console.log('O² Elliotosa Enterprises loaded.');
 })();
 </script>
 </body>
