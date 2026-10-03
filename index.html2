@@ -555,15 +555,15 @@
     /* ═══════════════════════════════════════════════
        FIREBASE CONFIG — replace with your own project
        ═══════════════════════════════════════════════ */
-    var FIREBASE_CONFIG = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT.firebaseapp.com",
-        databaseURL: "https://YOUR_PROJECT-default-rtdb.firebaseio.com",
-        projectId: "YOUR_PROJECT_ID",
-        storageBucket: "YOUR_PROJECT.appspot.com",
-        messagingSenderId: "YOUR_SENDER_ID",
-        appId: "YOUR_APP_ID"
-    };
+  const firebaseConfig = {
+  apiKey: "AIzaSyD7vIF4clloR8mKaUA2AIMOrLKOP2Xm9bM",
+  authDomain: "o2elliotosa.firebaseapp.com",
+  databaseURL: "https://o2elliotosa-default-rtdb.firebaseio.com",
+  projectId: "o2elliotosa",
+  storageBucket: "o2elliotosa.firebasestorage.app",
+  messagingSenderId: "211055413845",
+  appId: "1:211055413845:web:91d327377d6b138443e2dc"
+};
 
     /* ═══════════════════════════════════════════════
        DOM HELPERS
