@@ -523,7 +523,7 @@
     // ─── FIREBASE ───
     function initFirebase() {
         try {
-            firebase.initializeApp(FIREBASE_CONFIG);
+            firebase.initializeApp(firebaseConfig);
             db = firebase.database();
             firebaseReady = true;
             db.ref('settings').on('value', function(snap) {
